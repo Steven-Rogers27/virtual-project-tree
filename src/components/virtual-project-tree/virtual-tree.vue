@@ -4,48 +4,78 @@
       class="v-tree absolute top-0 left-0 right-0 bottom-0 px-16"
       :style="{transform: `translateY(${vtreeMoveDistance}px)`}"
     >
-      <div
-        v-for="item in renderedTreeData"
-        :key="item.idInfo"
-        class="border-t-0 border-l-0 border-r-0 border-b-1 border-solid border-b-color-grep-2 box-border min-h-44 leading-44 relative cursor-pointer flex items-center justify-between"
-        :data-serial="item.serialNumber"
-      >
+      <template v-if="renderedTreeData.length">
         <div
-          :class="[{ 'px-7': item.domHeight > 44 }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
-          :style="{paddingLeft: `${item.level * 16}px`}"
+          v-for="item in renderedTreeData"
+          :key="item.idInfo"
+          class="border-t-0 border-l-0 border-r-0 border-b-1 border-solid border-b-color-grep-2 box-border min-h-44 leading-44 relative cursor-pointer flex items-center justify-between"
+          :data-serial="item.serialNumber"
         >
-          <span
-            :class="[[item.level < 3 ? 'font-color-3' : 'font-color-2'], 'text-16 font-normal font-family']"
-          >{{item.name}}</span>
+          <div
+            :class="[{ 'px-7': item.domHeight > 44 }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
+            :style="{paddingLeft: `${item.level * 16}px`}"
+          >
+            <span
+              :class="[[item.level < 3 ? 'font-color-3' : 'font-color-2'], 'text-16 font-normal font-family']"
+              v-html="item.name"
+            ></span>
+          </div>
+          <div class="w-18 absolute right-0">
+            <div class="project-line-arrow"></div>
+          </div>
         </div>
-        <div class="w-18 absolute right-0">
-          <div class="project-line-arrow"></div>
+      </template>
+      <div
+        v-else
+        class="h-full w-empty-tree mx-44 box-border relative"
+      >
+        <div class="text-center absolute top-25p left-50p translate-x-n50p">
+          <div class="empty-tree-img mb-16"></div>
+          <span class="font-color-4 font-family text-14 font-normal">暂无数据</span>
         </div>
       </div>
     </div>
     <div
       class="real-height-div w-full"
-      :style="{height: treeFullHeight}"
+      :style="{height: `${treeFullHeight}px`}"
     ></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { treeFlatten, } from './utils'
-import { businessTreeMock } from './mock';
+import { ref, onMounted, toRefs, watch } from 'vue'
+
+type Props = {
+  treeMap: Array<any>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  treeMap: () => [],
+}) 
+
+const {
+  treeMap,
+} = toRefs(props)
 
 const scrollTop = ref(0)
 const renderedTreeData = ref<any[]>([])
-const treeMap = treeFlatten(businessTreeMock)
-const treeFullHeight = ref('0')
+const treeFullHeight = ref(0)
 const vtreeMoveDistance = ref(0)
 
 const start = ref(0)
 
+watch(treeMap, () => {
+  scrollTop.value = 0
+  renderedTreeData.value = []
+  treeFullHeight.value = 0
+  vtreeMoveDistance.value = 0
+  calculateVirtualTreeData()
+})
+
 const calculateVirtualTreeData = () => {
   const vtreeWrapDom = document.querySelector('.virtual-tree-wrapper')
   if (!vtreeWrapDom) return
+  vtreeWrapDom.scrollTop = 0
 
   const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
 
@@ -72,14 +102,14 @@ const calculateVirtualTreeData = () => {
     let count = 0
     let calcItemHeight = 0
     let lastItemHeight = 0
-    for (let i = start, len = treeMap.length; i < len; i++) {
+    for (let i = start, len = treeMap.value.length; i < len; i++) {
       if (calcItemHeight >= threshold) {
         if (i === 0) break
         count--
-        lastItemHeight = treeMap[i - 1][1].domHeight
+        lastItemHeight = treeMap.value[i - 1][1].domHeight
         break
       }
-      const item = treeMap[i][1]
+      const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
         item.domHeight = calcDomHeight(item.name, item.level)
       }
@@ -93,11 +123,11 @@ const calculateVirtualTreeData = () => {
   const calcCount = (start: number, threshold: number) => {
     let count = 0
     let calcItemHeight = 0
-    for (let i = start, len = treeMap.length; i < len; i++) {
+    for (let i = start, len = treeMap.value.length; i < len; i++) {
       if (calcItemHeight >= threshold) {
         break
       }
-      const item = treeMap[i][1]
+      const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
         item.domHeight = calcDomHeight(item.name, item.level)
       }
@@ -110,8 +140,8 @@ const calculateVirtualTreeData = () => {
 
   const calcTreeFullHeight = () => {
     let calcItemHeight = 0
-    for (let i = 0, len = treeMap.length; i < len; i++) {
-      const item = treeMap[i][1]
+    for (let i = 0, len = treeMap.value.length; i < len; i++) {
+      const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
         item.domHeight = calcDomHeight(item.name, item.level)
       }
@@ -120,7 +150,7 @@ const calculateVirtualTreeData = () => {
     return calcItemHeight
   }
 
-  treeFullHeight.value = calcTreeFullHeight() + 'px'
+  treeFullHeight.value = calcTreeFullHeight()
   const [ upHiddenCount, calcItemHeight, lastItemHeight ] = calcUpHiddenCount(0, vtreeWrapDom.scrollTop)
   /**
    * v-tree 每次 translateY() 下移的距离应该是 calcItemHeight - lastItemHeight 
@@ -135,7 +165,7 @@ const calculateVirtualTreeData = () => {
   start.value = Math.max(upHiddenCount, 0)
 
   let viewportCount = calcCount(start.value, vtwHeight)
-  renderedTreeData.value = treeMap.slice(start.value, start.value + viewportCount).map(t => t[1])
+  renderedTreeData.value = treeMap.value.slice(start.value, start.value + viewportCount).map(t => t[1])
 
   const scrollHandle = (evt: Event) => {
     const target = evt.target as HTMLDivElement
@@ -147,8 +177,8 @@ const calculateVirtualTreeData = () => {
     // 更新起始下标start.value
     start.value = upHiddenCount
 
-    viewportCount = calcCount(start.value, vtwHeight)
-    renderedTreeData.value = treeMap.slice(start.value, start.value + viewportCount).map(t => t[1])
+    viewportCount = calcCount(start.value, vtwHeight + Math.ceil(vtwHeight * 0.2)) // 高度多算个20%
+    renderedTreeData.value = treeMap.value.slice(start.value, start.value + viewportCount).map(t => t[1])
   }
 
   let ticking = false

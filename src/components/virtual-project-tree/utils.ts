@@ -38,3 +38,18 @@ export function throttle(fn, wait) {
     }, wait)
   }
 }
+
+export function debounce(fn, wait) {
+  let timer = null
+
+  return (...args) => {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+    timer = setTimeout(() => {
+      fn(...args)
+      timer = null
+    }, wait)
+  }
+}

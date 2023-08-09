@@ -24,11 +24,21 @@
           shape="round"
           background="rgba(247, 248, 250, 1)"
           autocomplete="off"
+          :clearable="false"
+          :right-icon="searchValueNonEmpty ? 'clear' : ''"
+          @search="handleSearch"
+          @click-left-icon="handleSearch"
+          @click-right-icon="handleSearchClear"
         />
       </van-config-provider>
-      <span :class="[[searchValueNonEmpty ? 'opacity-100 transition-opacity cursor-pointer' : 'opacity-0 transition-opacity z-n1'], 'text-16 font-normal font-family font-color text-left ml-8 absolute top-8 right-16']">取消</span>
+      <span
+        :class="[[searchValueNonEmpty ? 'opacity-100 transition-opacity cursor-pointer' : 'opacity-0 transition-opacity z-n1'], 'text-16 font-normal font-family font-color text-left ml-8 absolute top-8 right-16']"
+        @click="handleSearchClear"
+      >取消</span>
     </div>
-    <VirtualTree />
+    <VirtualTree
+      :tree-map="treeMap"
+    />
     <div
       :class="['h-81p absolute w-full bg-color-white z-9', [ filterDropdownStatus ? 'top-52 transition-top' : 'top-n81p transition-top' ]]"
     >
@@ -78,11 +88,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { categoryListMock } from './mock';
+import { reactive, computed, ref, toRefs } from 'vue';
+import { categoryListMock, } from './mock';
 import VirtualTree from './virtual-tree.vue'
-import { reactive } from 'vue';
-import { computed } from 'vue';
+import { treeFlatten, } from './utils'
+import { watch } from 'vue';
+
+type Props = {
+  businessTree: Array<any>
+}
+const props = withDefaults(defineProps<Props>(), {
+  businessTree: () => []
+}) 
+
+const {
+  businessTree,
+} = toRefs(props)
 
 const filterDropdownStatus = ref(false)
 const handleFilterClick = () => {
@@ -113,10 +134,74 @@ const vanSearchThemeVars = reactive({
   fieldIconSize: '16px',
   badgeFontWeight: 400,
   cellLineHeight: '28px',
-  // fieldInputTextColor: 'rgba(200, 201, 204, 1)',
+  fieldClearIconSize: '16px',
+  fieldRightIconColor: 'rgba(200, 201, 204, 1)',
 })
 const searchValueNonEmpty = computed(() => {
   return !!(searchValue.value || '').trim().length
+})
+
+const handleSearchClear = () => {
+  searchValue.value = ''
+  handleSearch()
+}
+const handleSearch = () => {
+  const kw = (searchValue.value || '').trim()
+  if (!kw.length) {
+    treeMap.value = fullTreeMap.value
+    return
+  }
+
+  const newTreeMap = []
+  const fullTreeNameList = fullTreeMap.value.map(t => t[1].name)
+  for (let i = 0, len = fullTreeNameList.length; i < len; i++) {
+    const nameCharList = fullTreeNameList[i].split('')
+    const kwCharList = kw.split('')
+    let match = true
+    let j = 0
+    for (let k = 0, kLen = kwCharList.length; k < kLen; k++) {
+      let found = false
+      for (let jLen = nameCharList.length; j < jLen; j++) {
+        if (kwCharList[k] === nameCharList[j]) {
+          found = true
+          j++
+          break
+        }
+      }
+      if (!found) {
+        match = false
+        break
+      }
+    }
+    if (match) {
+      let name = ''
+      for (let n = 0, nLen = nameCharList.length; n < nLen; n++) {
+        if (kwCharList.includes(nameCharList[n])) {
+          name += `<span style="color: rgba(26, 121, 255, 1);">${nameCharList[n]}</span>`
+        } else {
+          name += nameCharList[n]
+        }
+      }
+
+      newTreeMap.push([
+        fullTreeMap.value[i][0],
+        {
+          ...fullTreeMap.value[i][1],
+          name,
+        },
+      ])
+    }
+  }
+
+  treeMap.value = newTreeMap
+}
+
+const treeMap = ref<any[]>([])
+const fullTreeMap = ref<any[]>([]) 
+watch(businessTree, () => {
+  fullTreeMap.value = treeMap.value = treeFlatten(businessTree.value)
+}, {
+  immediate: true
 })
 </script>
 
