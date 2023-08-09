@@ -13,8 +13,20 @@
           :class="['box-border h-8 w-8 border-b-color-white border-x-color-white border-t-4 border-x-4 border-solid absolute right-0 translate-y-n50p top-50p-plus2', [ filterDropdownStatus ? 'border-t-color-active rotate-180 top-50p-n2 transition-transform-border-t-color' : 'transition-transform-border-t-color border-t-color' ]]"></div>
       </div>
     </div>
-    <div class="box-border h-52 px-16 py-8 leading-36 bg-color-white text-left">
-      <div class="h-36 rounded-19 leading-36 bg-color-2 w-full text-left"></div>
+    <div class="box-border h-52 px-16 py-8 leading-36 bg-color-white text-left relative">
+      <van-config-provider
+        :theme-vars="vanSearchThemeVars"
+      >
+        <van-search
+          :class="[[searchValueNonEmpty ? 'search-narrow-status transition-width' : 'search-wide-status transition-width'], 'v-project-tree-van-search']"
+          v-model="searchValue"
+          placeholder="搜索"
+          shape="round"
+          background="rgba(247, 248, 250, 1)"
+          autocomplete="off"
+        />
+      </van-config-provider>
+      <span :class="[[searchValueNonEmpty ? 'opacity-100 transition-opacity cursor-pointer' : 'opacity-0 transition-opacity z-n1'], 'text-16 font-normal font-family font-color text-left ml-8 absolute top-8 right-16']">取消</span>
     </div>
     <VirtualTree />
     <div
@@ -69,6 +81,8 @@
 import { ref } from 'vue';
 import { categoryListMock } from './mock';
 import VirtualTree from './virtual-tree.vue'
+import { reactive } from 'vue';
+import { computed } from 'vue';
 
 const filterDropdownStatus = ref(false)
 const handleFilterClick = () => {
@@ -92,6 +106,18 @@ const handleDropdownConfirm = () => {
   handleMaskClick()
 }
 
+const searchValue = ref('')
+const vanSearchThemeVars = reactive({
+  searchPadding: '0',
+  searchInputHeight: '36px',
+  fieldIconSize: '16px',
+  badgeFontWeight: 400,
+  cellLineHeight: '28px',
+  // fieldInputTextColor: 'rgba(200, 201, 204, 1)',
+})
+const searchValueNonEmpty = computed(() => {
+  return !!(searchValue.value || '').trim().length
+})
 </script>
 
 <style>

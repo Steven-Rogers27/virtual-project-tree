@@ -225,7 +225,7 @@
   color: rgba(50, 50, 50, 1);
 }
 .font-family {
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, 'Microsoft YaHei', 'SimSun', sans-serif;;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, 'Microsoft YaHei', 'SimSun', sans-serif;
 }
 .font-medium {
   font-weight: 500;
@@ -262,6 +262,10 @@
 .right-0 {
   right: 0;
 }
+.right-16 {
+  right: 16px;
+}
+
 .top-50p-plus2 {
   top: calc(50% + 2px);
 }
@@ -276,6 +280,9 @@
 }
 .top-52 {
   top: 52px;
+}
+.top-8 {
+  top: 8px;
 }
 .top-n81p {
   top: calc(-81.948% + 52px);
@@ -327,6 +334,11 @@
 }
 .transition-transform {
   transition-property: transform;
+  transition-timing-function: linear;
+  transition-duration: 200ms;
+}
+.transition-width {
+  transition-property: width;
   transition-timing-function: linear;
   transition-duration: 200ms;
 }
@@ -410,6 +422,9 @@
 .mt-16 {
   margin-top: 16px;
 }
+.ml-8 {
+  margin-left: 8px;
+}
 
 .cursor-pointer {
   cursor: pointer;
@@ -469,4 +484,22 @@
   background-size: contain;
   width: 7.51px;
   height: 13.52px;
+}
+
+:root {
+  --van-gray-5: rgba(200, 201, 204, 1);
+}
+
+.v-project-tree-van-search {
+  border-radius: 19px;
+}
+.v-project-tree-van-search input {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', Arial, 'Microsoft YaHei', 'SimSun', sans-serif;
+}
+
+.search-narrow-status {
+  width: calc(100% - 32px - 8px);
+}
+.search-wide-status {
+  width: 100%;
 }
