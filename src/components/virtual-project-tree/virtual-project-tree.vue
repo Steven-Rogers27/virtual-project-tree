@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="box-border h-52 px-16 py-8 leading-36 bg-color-white text-left">
-      搜索框
+      <div class="h-36 rounded-19 leading-36 bg-color-2 w-full text-left"></div>
     </div>
     <VirtualTree />
     <div
