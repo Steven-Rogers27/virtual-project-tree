@@ -38,6 +38,7 @@
     </div>
     <VirtualTree
       :tree-map="treeMap"
+      @node-click="handleTreeItemClick"
     />
     <div
       :class="['h-81p absolute w-full bg-color-white z-9', [ filterDropdownStatus ? 'top-52 transition-top' : 'top-n81p transition-top' ]]"
@@ -203,6 +204,18 @@ watch(businessTree, () => {
 }, {
   immediate: true
 })
+
+const emit = defineEmits<{
+  nodeClick: [node: any], 
+}>()
+
+const handleTreeItemClick = (serialNumber: number) => {
+  const item = fullTreeMap.value[serialNumber][1]
+  const cp = {...item}
+  Reflect.deleteProperty(cp, 'domHeight')
+  Reflect.deleteProperty(cp, 'serialNumber')
+  emit('nodeClick', cp)
+}
 </script>
 
 <style>

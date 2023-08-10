@@ -1,5 +1,8 @@
 <template>
-  <div class="virtual-tree-wrapper h-100-104 box-content overflow-auto px-16 relative bg-color-white">
+  <div
+    class="virtual-tree-wrapper h-100-104 box-content overflow-auto px-16 relative bg-color-white"
+    @click="handleItemClick"
+  >
     <div
       class="v-tree absolute top-0 left-0 right-0 bottom-0 px-16"
       :style="{transform: `translateY(${vtreeMoveDistance}px)`}"
@@ -9,7 +12,7 @@
           v-for="item in renderedTreeData"
           :key="item.idInfo"
           class="border-t-0 border-l-0 border-r-0 border-b-1 border-solid border-b-color-grep-2 box-border min-h-44 leading-44 relative cursor-pointer flex items-center justify-between"
-          :data-serial="item.serialNumber"
+          :data-serial-number="item.serialNumber"
         >
           <div
             :class="[{ 'px-7': item.domHeight > 44 }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
@@ -208,6 +211,19 @@ onMounted(() => {
     calculateVirtualTreeData()
   });
 })
+
+const emit = defineEmits<{
+  nodeClick: [serialNumber: number],
+}>()
+
+const handleItemClick = (evt) => {
+  let target = evt.target
+  while (target.dataset.serialNumber === void 0) {
+    target = target.parentElement
+  }
+
+  emit('nodeClick', target.dataset.serialNumber)
+}
 </script>
 
 <style>

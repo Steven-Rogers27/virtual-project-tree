@@ -7,29 +7,37 @@ export const categoryListMock = [
     category: '状态',
     options: [
       {
-        name: '进场',
+        "code": "0100",
+        "name": "进场"
       },
       {
-        name: '在建',
+        "code": "0200",
+        "name": "在建"
       },
       {
-        name: '收尾',
+        "code": "4",
+        "name": "收尾"
       },
       {
-        name: '竣工',
+          "code": "5",
+          "name": "竣工"
       },
       {
-        name: '停工',
+          "code": "0300",
+          "name": "停工"
       },
       {
-        name: '其他',
+          "code": "7",
+          "name": "其它"
       },
       {
-        name: '清欠',
+          "code": "6",
+          "name": "清欠"
       },
       {
-        name: '销号',
-      },
+          "code": "8",
+          "name": "销号"
+      }
     ],
   },
   {
