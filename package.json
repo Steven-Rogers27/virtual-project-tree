@@ -3,6 +3,17 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/virtual-project-tree.umd.cjs",
+  "module": "./dist/virtual-project-tree.js",
+  "exports": {
+    ".": {
+      "import": "./dist/virtual-project-tree.js",
+      "require": "./dist/virtual-project-tree.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
@@ -13,8 +24,11 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/node": "^20.4.9",
+    "@vitejs/plugin-legacy": "^4.1.1",
     "@vitejs/plugin-vue": "^4.2.3",
     "sass": "^1.64.2",
+    "terser": "^5.19.2",
     "typescript": "^5.0.2",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.5",

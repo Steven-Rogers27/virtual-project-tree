@@ -90,20 +90,22 @@
 
 <script setup lang="ts">
 import { reactive, computed, ref, toRefs } from 'vue';
-import { categoryListMock, } from './mock';
 import VirtualTree from './virtual-tree.vue'
 import { treeFlatten, } from './utils'
 import { watch } from 'vue';
 
 type Props = {
-  businessTree: Array<any>
+  businessTree: Array<Partial<VirtualProjectTree.BusinessTreeNode>>
+  treeParams: VirtualProjectTree.BusinessTreeParameter
 }
 const props = withDefaults(defineProps<Props>(), {
-  businessTree: () => []
+  businessTree: () => [],
+  treeParams: () => ({}),
 }) 
 
 const {
   businessTree,
+  treeParams,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -114,8 +116,7 @@ const handleMaskClick = () => {
   filterDropdownStatus.value = false
 }
 
-const categoryList = ref(categoryListMock)
-const handleDropdownOptionClick = (opt) => {
+const handleDropdownOptionClick = (opt: VirtualProjectTree.BusinessTreeParameterOption) => {
   opt.active = !opt.active
 }
 
@@ -203,6 +204,34 @@ watch(businessTree, () => {
   fullTreeMap.value = treeMap.value = treeFlatten(businessTree.value)
 }, {
   immediate: true
+})
+
+interface Category {
+  category: string
+  options: VirtualProjectTree.BusinessTreeParameterOption[] 
+}
+
+const categoryList = ref<Category[]>([])
+watch(treeParams, (params) => {
+  if (!Array.isArray(params) || !params.length) return
+
+  const list: Category[] = []
+  const map = new Map<string, string>([
+    ['projectStatus', '状态'],
+    ['majorType', '重点项目'],
+    ['projectType', '工程类型'],
+  ])
+
+  Reflect.ownKeys(params).forEach((k) => {
+    list.push({
+      category: map.get(k as string) as string,
+      options: params[k as string],
+    })
+  }) 
+
+  categoryList.value = list
+}, {
+  immediate: true,
 })
 
 const emit = defineEmits<{

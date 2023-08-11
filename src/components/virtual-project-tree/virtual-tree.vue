@@ -216,13 +216,13 @@ const emit = defineEmits<{
   nodeClick: [serialNumber: number],
 }>()
 
-const handleItemClick = (evt) => {
-  let target = evt.target
-  while (target.dataset.serialNumber === void 0) {
+const handleItemClick = (evt: MouseEvent) => {
+  let target: HTMLElement | null = evt.target as HTMLElement
+  while (target && target.dataset.serialNumber === void 0) {
     target = target.parentElement
   }
 
-  emit('nodeClick', target.dataset.serialNumber)
+  target && emit('nodeClick', parseInt(target.dataset.serialNumber as string))
 }
 </script>
 

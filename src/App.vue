@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import VirtualProjectTree from './components/virtual-project-tree/virtual-project-tree.vue'
-import { businessTreeMock } from './components/virtual-project-tree/mock';
+import { businessTreeMock, categoryListMock } from './components/virtual-project-tree/mock';
 </script>
 
 <template>
   <VirtualProjectTree
     :business-tree="businessTreeMock"
+    :tree-params="categoryListMock"
   />
 </template>
 
