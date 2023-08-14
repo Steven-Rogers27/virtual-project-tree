@@ -157,6 +157,10 @@ const handleDropdownConfirm = () => {
    * 筛选条件改变时重新查接口
    */
   invokeHttpGetSubSystemTree()
+  emit('confirmClick', {
+    ...activedTreeParams,
+    hideStatus: hideStatus.value,
+  })
 }
 
 const handleDropdownReset = () => {
@@ -164,10 +168,6 @@ const handleDropdownReset = () => {
   activedTreeParams.projectStatus = ''
   activedTreeParams.projectType = ''
   hideStatus.value = false
-  /**
-   * 筛选条件改变时重新查接口
-   */
-  invokeHttpGetSubSystemTree()
 }
 
 const searchValue = ref('')
@@ -305,6 +305,7 @@ watch(treeParams, (params) => {
 
 const emit = defineEmits<{
   nodeClick: [node: any], 
+  confirmClick: [params: any],
 }>()
 
 const handleTreeItemClick = (serialNumber: number) => {

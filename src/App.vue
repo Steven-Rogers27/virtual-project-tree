@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { VirtualProjectTree, } from './components/virtual-project-tree/index'
 import { businessTreeMock, categoryListMock } from './components/virtual-project-tree/mock';
+
+const handleConfirmClick = (params) => {
+  console.log(params)
+}
 </script>
 
 <template>
   <VirtualProjectTree
     :business-tree="businessTreeMock"
     :tree-params="categoryListMock"
+    @confirm-click="handleConfirmClick"
   />
 </template>
 
