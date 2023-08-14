@@ -52,11 +52,11 @@
           >
             <div><span class="font-color-2 font-family text-14 font-normal">{{cate.category}}</span></div>
             <div
-              :class="[[opt.active ? 'dropdown-option bg-color-active-008 ' : 'bg-color-1'], 'relative rounded-16  leading-32 min-h-32 text-center box-border min-w-58 mt-12 mr-8 cursor-pointer inline-block px-15 whitespace-nowrap']"
+              :class="[[activedTreeParams[opt.category!] === opt.code ? 'dropdown-option bg-color-active-008 ' : 'bg-color-1'], 'relative rounded-16  leading-32 min-h-32 text-center box-border min-w-58 mt-12 mr-8 cursor-pointer inline-block px-15 whitespace-nowrap']"
               v-for="opt in cate.options"
               :key="opt.name"
               @click="handleDropdownOptionClick(opt)"
-            ><span :class="[[opt.active ? 'font-color-active' : 'font-color'], 'font-family text-14 font-normal'] ">{{opt.name}}</span></div>
+            ><span :class="[[activedTreeParams[opt.category!] === opt.code ? 'font-color-active' : 'font-color'], 'font-family text-14 font-normal'] ">{{opt.name}}</span></div>
           </div>
         </div>
         <div
@@ -70,7 +70,10 @@
         </div>
       </div>
       <div class="whitespace-nowrap box-border h-50 w-full px-16 leading-50 bg-color-white cursor-pointer">
-        <div class="h-40 leading-40 w-48-1p inline-block text-center rounded-100 border-color-1 border-1 border-solid mr-12">
+        <div
+          class="h-40 leading-40 w-48-1p inline-block text-center rounded-100 border-color-1 border-1 border-solid mr-12"
+          @click="handleDropdownReset"
+        >
           <span class="font-color text-14 font-normal font-family">重置</span>
         </div>
         <div
@@ -89,23 +92,42 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, toRefs } from 'vue';
+import { reactive, computed, ref, toRefs, watch, onActivated, } from 'vue';
 import VirtualTree from './virtual-tree.vue'
-import { treeFlatten, } from './utils'
-import { watch } from 'vue';
+import { treeFlatten, isObjectType } from './utils'
+import { http, httpGetHomePageTreeParameter, httpGetSubSystemTree } from './http'
 
 type Props = {
   businessTree: Array<Partial<VirtualProjectTree.BusinessTreeNode>>
   treeParams: VirtualProjectTree.BusinessTreeParameter
+  defaultActivedTreeParams: VirtualProjectTree.DefaultActivedBusinessTreeParameter
+  defaultHideStatus: boolean
+  businessTreeType: number
+  platformId: number
+  subSystemMark: string
 }
 const props = withDefaults(defineProps<Props>(), {
   businessTree: () => [],
   treeParams: () => ({}),
+  defaultActivedTreeParams: () => ({
+    projectStatus: '0200', // 默认选中 在建
+    majorType: '',
+    projectType: '',
+  }),
+  defaultHideStatus: false,
+  businessTreeType: 1, // 默认 工程信息树
+  platformId: 1, // 默认 铁建平台
+  subSystemMark: '',
 }) 
 
 const {
   businessTree,
   treeParams,
+  defaultActivedTreeParams,
+  defaultHideStatus,
+  businessTreeType,
+  platformId,
+  subSystemMark,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -117,16 +139,35 @@ const handleMaskClick = () => {
 }
 
 const handleDropdownOptionClick = (opt: VirtualProjectTree.BusinessTreeParameterOption) => {
-  opt.active = !opt.active
+  if (opt.code === activedTreeParams[opt.category!]) return
+  activedTreeParams[opt.category!] = opt.code
 }
 
 const hideStatus = ref(false)
+watch(defaultHideStatus, (v) => hideStatus.value = v, {
+  immediate: true,
+})
 const handleHideClick = () => {
   hideStatus.value = !hideStatus.value
 }
 
 const handleDropdownConfirm = () => {
   handleMaskClick()
+  /**
+   * 筛选条件改变时重新查接口
+   */
+  invokeHttpGetSubSystemTree()
+}
+
+const handleDropdownReset = () => {
+  activedTreeParams.majorType = ''
+  activedTreeParams.projectStatus = ''
+  activedTreeParams.projectType = ''
+  hideStatus.value = false
+  /**
+   * 筛选条件改变时重新查接口
+   */
+  invokeHttpGetSubSystemTree()
 }
 
 const searchValue = ref('')
@@ -200,8 +241,13 @@ const handleSearch = () => {
 
 const treeMap = ref<any[]>([])
 const fullTreeMap = ref<any[]>([]) 
+
+const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTree.BusinessTreeNode>>) => {
+  fullTreeMap.value = treeMap.value = treeFlatten(data)
+}
+
 watch(businessTree, () => {
-  fullTreeMap.value = treeMap.value = treeFlatten(businessTree.value)
+  handleBusinessTreeChange(businessTree.value)
 }, {
   immediate: true
 })
@@ -212,8 +258,22 @@ interface Category {
 }
 
 const categoryList = ref<Category[]>([])
-watch(treeParams, (params) => {
-  if (!Array.isArray(params) || !params.length) return
+const activedTreeParams = reactive<Record<string, string>>({
+  projectStatus: '',
+  majorType: '',
+  projectType: '',
+})
+
+watch(defaultActivedTreeParams, (params) => {
+  activedTreeParams.majorType = params.majorType
+  activedTreeParams.projectStatus = params.projectStatus
+  activedTreeParams.projectType = params.projectType
+}, {
+  immediate: true,
+})
+
+const handleTreeParamsChange = (params: VirtualProjectTree.BusinessTreeParameter) => {
+  if (!isObjectType(params)) return
 
   const list: Category[] = []
   const map = new Map<string, string>([
@@ -224,12 +284,21 @@ watch(treeParams, (params) => {
 
   Reflect.ownKeys(params).forEach((k) => {
     list.push({
-      category: map.get(k as string) as string,
-      options: params[k as string],
+      category: map.get(k as string) || '其他',
+      options: (params[k as string] || []).map(o => {
+        return {
+          ...o,
+          category: k as string,
+        }
+      }),
     })
   }) 
 
   categoryList.value = list
+}
+
+watch(treeParams, (params) => {
+  handleTreeParamsChange(params)
 }, {
   immediate: true,
 })
@@ -245,6 +314,47 @@ const handleTreeItemClick = (serialNumber: number) => {
   Reflect.deleteProperty(cp, 'serialNumber')
   emit('nodeClick', cp)
 }
+
+const invokeHttpGetSubSystemTree = () => {
+  if (http) {
+    httpGetSubSystemTree({
+      platFormId: platformId.value,
+      projectDisableFlag: hideStatus.value,
+      projectMajorTypeCode: activedTreeParams.majorType,
+      projectStatusCode: activedTreeParams.projectStatus,
+      projectTypeCode: activedTreeParams.projectType,
+      subSystemMark: subSystemMark.value,
+      subTreeValue: businessTreeType.value,
+    }).then(data => {
+      handleBusinessTreeChange(data)
+    })
+  }
+}
+
+const invokeHttpGetHomePageTreeParameter = () => {
+  if (http) {
+    // 传入axios实例则启用组件内部封装的接口调用
+    httpGetHomePageTreeParameter({
+      businessTreeType: businessTreeType.value,
+      platformId: platformId.value
+    }).then(data => {
+      handleTreeParamsChange(data)
+      invokeHttpGetSubSystemTree()
+    })
+  }
+}
+
+invokeHttpGetHomePageTreeParameter()
+onActivated(() => {
+  invokeHttpGetHomePageTreeParameter()
+})
+
+watch([businessTreeType, platformId], () => {
+  invokeHttpGetHomePageTreeParameter()
+})
+watch(subSystemMark, () => {
+  invokeHttpGetSubSystemTree()
+})
 </script>
 
 <style>

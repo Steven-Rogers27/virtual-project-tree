@@ -59,3 +59,8 @@ export function debounce(fn: (...args: unknown[]) => unknown, wait: number) {
     }, wait)
   }
 }
+
+export function isObjectType(o: any) {
+  const regexp = /\[object Object\]/
+  return regexp.test(o)
+}

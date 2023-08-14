@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import legacy from '@vitejs/plugin-legacy'
 import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from 'unplugin-vue-components/resolvers'
 import { resolve, dirname } from 'node:path'
@@ -18,14 +17,11 @@ export default defineConfig({
         VantResolver()
       ],
     }),
-    legacy({
-      targets: ['last 2 versions and not dead, > 0.1%, Firefox ESR'],
-    })
   ],
   build: {
-    target: ['es5'],
+    target: ['chrome80'],
     lib: {
-      entry: resolve(__dirname, 'src/components/virtual-project-tree/virtual-project-tree.vue'), 
+      entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'), 
       name: 'VirutalProjectTree',
     },
     minify: 'terser',

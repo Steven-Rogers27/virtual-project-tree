@@ -24,10 +24,33 @@ namespace VirtualProjectTree {
   export interface BusinessTreeParameterOption {
     code: string;
     name: string;
-    active?: boolean
+    category?: string;
   }
 
   export interface BusinessTreeParameter {
     [k: string]: BusinessTreeParameterOption[];
+  }
+
+  export interface DefaultActivedBusinessTreeParameter {
+    [k: string]: string;
+  }
+
+  declare interface Axios {
+    request: (arg: any) => any
+  }
+
+  declare interface HttpGetSubSystemTreeParams {
+    platFormId: number;
+    projectDisableFlag: boolean;
+    projectMajorTypeCode: string;
+    projectStatusCode: string;
+    projectTypeCode: string;
+    subSystemMark: string;
+    subTreeValue: number;
+  }
+
+  declare interface HttpGetHomePageTreeParameterParams {
+    businessTreeType: number;
+    platformId: number;
   }
 }
