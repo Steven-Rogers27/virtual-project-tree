@@ -6,6 +6,8 @@ export const registerAxios = (axios: VirtualProjectTree.Axios) => {
 export async function httpGetSubSystemTree(params: VirtualProjectTree.HttpGetSubSystemTreeParams) {
   try {
     const res = await http.request({
+      method: 'get',
+      url: '/admin/login/userBusinessTreeApp/subSystemTree',
       params,
     })
 
@@ -18,6 +20,8 @@ export async function httpGetSubSystemTree(params: VirtualProjectTree.HttpGetSub
 export async function httpGetHomePageTreeParameter(params: VirtualProjectTree.HttpGetHomePageTreeParameterParams) {
   try {
     const res = await http.request({
+      method: 'get',
+      url: '/admin/login/userBusinessTreeApp/homePageTreeParameter',
       params,
     })
     return res.data

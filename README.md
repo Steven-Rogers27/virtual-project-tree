@@ -5,10 +5,9 @@
 1. 引入 VirtualProjectTree 组件
 
 ```js
-import { VirtualProjectTree } from 'virtual-project-tree'
-import 'virtual-project-tree/dist/style.css'
+import { install } from 'virtual-project-tree'
 
-app.mount(VirtualProjectTree.name, VirtualProjectTree)
+app.use(install)
 ```
 
 2. virtual-project-tree 内部封装了 /admin/login/userBusinessTreeApp/subSystemTree 接口 和 /admin/login/userBusinessTreeApp/homePageTreeParameter 接口的调用，从而可以让业务系统不用写接口调用直接使用。为此需要传入业务系统的axios实例
@@ -81,3 +80,15 @@ platformId: number
 subSystemMark: string
 ```
 业务系统mark
+
+## 事件
+
+```js
+nodeClick: [node: any], 
+```
+点击树节点时执行，返回点中的节点
+
+```js
+confirmClick: [params: Record<string, string | boolean>],
+```
+点击筛选下拉框“确认”按钮时执行，返回筛选条件
