@@ -22,9 +22,20 @@ export default defineConfig({
     target: ['chrome80'],
     lib: {
       entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'), 
+      formats: ['umd'],
       name: 'VirutalProjectTree',
     },
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        module: true,
+        passes: 10,
+      },
+      mangle: {
+        module: true,
+        toplevel: true,
+      },
+    },
     rollupOptions: {
       external: ['vue'],
       output: {
