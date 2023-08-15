@@ -15,6 +15,10 @@
       "require": "./dist/virtual-project-tree.umd.cjs"
     }
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "http://192.168.100.90:4873"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
