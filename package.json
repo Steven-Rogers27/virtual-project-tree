@@ -8,7 +8,7 @@
   ],
   "main": "./dist/virtual-project-tree.umd.cjs",
   "module": "./dist/virtual-project-tree.umd.cjs",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/virtual-project-tree.umd.cjs",
