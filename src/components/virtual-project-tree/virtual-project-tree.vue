@@ -97,6 +97,10 @@ import VirtualTree from './virtual-tree.vue'
 import { treeFlatten, isObjectType } from './utils'
 import { http, httpGetHomePageTreeParameter, httpGetSubSystemTree } from './http'
 
+defineOptions({
+  name: 'VirtualProjectTree',
+})
+
 type Props = {
   businessTree: Array<Partial<VirtualProjectTree.BusinessTreeNode>>
   treeParams: VirtualProjectTree.BusinessTreeParameter
@@ -305,7 +309,7 @@ watch(treeParams, (params) => {
 
 const emit = defineEmits<{
   nodeClick: [node: any], 
-  confirmClick: [params: any],
+  confirmClick: [params: Record<string, string | boolean>],
 }>()
 
 const handleTreeItemClick = (serialNumber: number) => {

@@ -1,4 +1,4 @@
-namespace VirtualProjectTree {
+declare namespace VirtualProjectTree {
   export interface BusinessTreeNode {
     id: string;
     idInfo: string;
@@ -35,11 +35,11 @@ namespace VirtualProjectTree {
     [k: string]: string;
   }
 
-  declare interface Axios {
+  export interface Axios {
     request: (arg: any) => any
   }
 
-  declare interface HttpGetSubSystemTreeParams {
+  export interface HttpGetSubSystemTreeParams {
     platFormId: number;
     projectDisableFlag: boolean;
     projectMajorTypeCode: string;
@@ -49,7 +49,7 @@ namespace VirtualProjectTree {
     subTreeValue: number;
   }
 
-  declare interface HttpGetHomePageTreeParameterParams {
+  export interface HttpGetHomePageTreeParameterParams {
     businessTreeType: number;
     platformId: number;
   }

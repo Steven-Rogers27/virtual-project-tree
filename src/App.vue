@@ -2,7 +2,7 @@
 import { VirtualProjectTree, } from './components/virtual-project-tree/index'
 import { businessTreeMock, categoryListMock } from './components/virtual-project-tree/mock';
 
-const handleConfirmClick = (params) => {
+const handleConfirmClick = (params: unknown) => {
   console.log(params)
 }
 </script>
