@@ -1,6 +1,6 @@
 <template>
   <div
-    class="virtual-tree-wrapper h-100-104 box-content overflow-auto px-16 relative bg-color-white"
+    class="virtual-tree-wrapper h-100-104 box-content overflow-auto px-16 relative bg-color-white text-16"
     @click="handleItemClick"
   >
     <div
@@ -15,8 +15,8 @@
           :data-serial-number="item.serialNumber"
         >
           <div
-            :class="[{ 'px-7': item.domHeight > 44 }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
-            :style="{paddingLeft: `${item.level * 16}px`}"
+            :class="[{ 'px-7': item.domHeight > 44 * fontSizeRatio }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
+            :style="{ paddingLeft: `${ item.level * 16 * fontSizeRatio }px`}"
           >
             <span
               :class="[[item.level < 3 ? 'font-color-3' : 'font-color-2'], 'text-16 font-normal font-family']"
@@ -75,11 +75,16 @@ watch(treeMap, () => {
   calculateVirtualTreeData()
 })
 
+const fontSizeRatio = ref(1)
 const calculateVirtualTreeData = () => {
   const vtreeWrapDom = document.querySelector('.virtual-tree-wrapper')
   if (!vtreeWrapDom) return
   vtreeWrapDom.scrollTop = 0
 
+  const wrapperCSS = window.getComputedStyle(vtreeWrapDom)
+  const realFontSize: number = +wrapperCSS.getPropertyValue('font-size').replace(/(px)$/, '')
+  const designFontSize = 16
+  fontSizeRatio.value = +(realFontSize / designFontSize).toFixed(3)
   const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
 
   const vtwRealHeightDom = document.querySelector('.virtual-tree-wrapper .real-height-div')
@@ -89,15 +94,15 @@ const calculateVirtualTreeData = () => {
 
   vtwWidth -= 6 // 估算移动端纵向滚动条宽度6px
   const calcDomHeight = (name: string, level: number) => {
-    const nameLen = name.length * 16
-    const boxLen = vtwWidth - level * 16 - 34
+    const nameLen = name.length * designFontSize * fontSizeRatio.value
+    const boxLen = vtwWidth - level * designFontSize * fontSizeRatio.value - 34 * fontSizeRatio.value // 34 是每行右边的箭头图标 width: 18px 再加上和文字内容间距 16px，共34px
     if (nameLen <= boxLen) {
       // 一行能放下
-      return 44
+      return +(44 * fontSizeRatio.value).toFixed(2)
     } else {
       // 放多行
       const rowNum = Math.ceil(nameLen / boxLen)
-      return rowNum * 24 + 1 + 14 // line-height: 24px  border-bottom-width: 1px  padding-top: 7px  padding-bottom: 7px
+      return +(rowNum * 24 * fontSizeRatio.value + 1 + 14 * fontSizeRatio.value).toFixed(2) // line-height: 24px  border-bottom-width: 1px  padding-top: 7px  padding-bottom: 7px
     }
   }
 
