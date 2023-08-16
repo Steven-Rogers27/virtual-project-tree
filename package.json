@@ -6,6 +6,10 @@
   "files": [
     "dist"
   ],
+  "author": {
+    "name": "sunw",
+    "email": "sunwei@cr12d.com"
+  },
   "main": "./dist/virtual-project-tree.umd.cjs",
   "module": "./dist/virtual-project-tree.umd.cjs",
   "types": "./dist/index.d.ts",
