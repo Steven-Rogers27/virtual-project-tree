@@ -5,7 +5,7 @@
 1. 引入 VirtualProjectTree 组件
 
 ```js
-import { install } from 'virtual-project-tree'
+import { install } from '@cool/virtual-project-tree'
 
 app.use(install)
 ```
@@ -13,7 +13,7 @@ app.use(install)
 2. virtual-project-tree 内部封装了 /admin/login/userBusinessTreeApp/subSystemTree 接口 和 /admin/login/userBusinessTreeApp/homePageTreeParameter 接口的调用，从而可以让业务系统不用写接口调用直接使用。为此需要传入业务系统的axios实例
 
 ```js
-import { config } from 'virtual-project-tree'
+import { config } from '@cool/virtual-project-tree'
 
 config(axios)
 ```
