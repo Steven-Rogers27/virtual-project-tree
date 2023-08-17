@@ -36,12 +36,12 @@ export default defineConfig({
     //   },
     // },
     rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: {
-          vue: 'Vue',
-        },
-      },
+      // external: ['vue'],
+      // output: {
+      //   globals: {
+      //     vue: 'Vue',
+      //   },
+      // },
     },
   },
   server: {
