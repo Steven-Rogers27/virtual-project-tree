@@ -11,7 +11,7 @@
     "email": "sunwei@cr12d.com"
   },
   "main": "./dist/virtual-project-tree.umd.cjs",
-  "module": "./dist/virtual-project-tree.js",
+  "module": "./dist/virtual-project-tree.umd.cjs",
   "publishConfig": {
     "access": "public",
     "registry": "http://192.168.100.90:4873"
