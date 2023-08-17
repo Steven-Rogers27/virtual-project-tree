@@ -1,4 +1,4 @@
-declare namespace VirtualProjectTree {
+declare namespace VirtualProjectTreeNamespace {
   export interface BusinessTreeNode {
     id: string;
     idInfo: string;
@@ -55,7 +55,3 @@ declare namespace VirtualProjectTree {
   }
 }
 
-declare module '*.vue' {
-  import { defineComponent } from 'vue'
-  export default ReturnType<typeof defineComponent>
-}

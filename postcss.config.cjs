@@ -1,7 +1,4 @@
-import { createRequire } from 'node:module'
-
-const require = createRequire(import.meta.url)
-export default {
+module.exports = {
 	plugins: [
 		require('autoprefixer'),
 		// require('postcss-pixel-to-viewport')({

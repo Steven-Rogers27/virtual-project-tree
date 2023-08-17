@@ -1,11 +1,8 @@
-import { createApp } from 'vue'
-import { ConfigProvider } from 'vant'
-import './style.css'
+import {createApp} from 'vue'
 import App from './App.vue'
-import { install } from './components/virtual-project-tree/index'
-
+import { VirtualProjectTree } from './components/virtual-project-tree/index'
 
 createApp(App)
-  .use(install)
-  .use(ConfigProvider)
+	// @ts-ignore
+  .use(VirtualProjectTree)
   .mount('#app')

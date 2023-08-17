@@ -1,10 +1,10 @@
-interface TreeNode extends Partial<VirtualProjectTree.BusinessTreeNode> {
+interface TreeNode extends Partial<VirtualProjectTreeNamespace.BusinessTreeNode> {
   level?: number;
   domHeight?: number;
   serialNumber?: number;
 }
 
-export function treeFlatten(tree: Partial<VirtualProjectTree.BusinessTreeNode>[]) {
+export function treeFlatten(tree: Partial<VirtualProjectTreeNamespace.BusinessTreeNode>[]) {
   if (!Array.isArray(tree) || !tree.length) return []
 
   const map = []

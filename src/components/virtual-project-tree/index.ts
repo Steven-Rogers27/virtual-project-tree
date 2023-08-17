@@ -1,16 +1,23 @@
-import VirtualProjectTreeComponent from './virtual-project-tree.vue'
+import VirtualProjectTree from './virtual-project-tree.vue'
 import { App } from 'vue'
 import { registerAxios } from './http'
-import './style.css'
+import { ConfigProvider, Search } from 'vant'
+import 'vant/lib/index.css'
 
-export const config = (axios: VirtualProjectTree.Axios) => {
+const config = (axios: VirtualProjectTreeNamespace.Axios) => {
   registerAxios(axios)
 }
 
 let installed = false
-export const install = (app: App) => {
+VirtualProjectTree.install = (app: App) => {
   if (installed) return
   installed = true
+	app.use(Search)
+			.use(ConfigProvider)
+      app.component(VirtualProjectTree.name, VirtualProjectTree)
+}
 
-  app.component(VirtualProjectTreeComponent.name, VirtualProjectTreeComponent)
+export {
+	VirtualProjectTree,
+	config,
 }

@@ -12,11 +12,11 @@ const __dirname = dirname(__filename)
 export default defineConfig({
   plugins: [
     vue(),
-    Components({
-      resolvers: [
-        VantResolver()
-      ],
-    }),
+    // Components({
+    //   resolvers: [
+    //     VantResolver()
+    //   ],
+    // }),
   ],
   build: {
     target: ['chrome80'],
@@ -24,24 +24,24 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'),
       name: 'VirutalProjectTree',
     },
-    // minify: 'terser',
-    // terserOptions: {
-    //   compress: {
-    //     module: true,
-    //     passes: 10,
-    //   },
-    //   mangle: {
-    //     module: true,
-    //     toplevel: true,
-    //   },
-    // },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        module: true,
+        passes: 10,
+      },
+      mangle: {
+        module: true,
+        toplevel: true,
+      },
+    },
     rollupOptions: {
-      // external: ['vue'],
-      // output: {
-      //   globals: {
-      //     vue: 'Vue',
-      //   },
-      // },
+      external: ['vue'],
+      output: {
+        globals: {
+          vue: 'Vue',
+        },
+      },
     },
   },
   server: {

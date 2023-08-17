@@ -1,9 +1,9 @@
-export let http: VirtualProjectTree.Axios
-export const registerAxios = (axios: VirtualProjectTree.Axios) => {
-  http = axios 
+export let http: VirtualProjectTreeNamespace.Axios
+export const registerAxios = (axios: VirtualProjectTreeNamespace.Axios) => {
+  http = axios
 }
 
-export async function httpGetSubSystemTree(params: VirtualProjectTree.HttpGetSubSystemTreeParams) {
+export async function httpGetSubSystemTree(params: VirtualProjectTreeNamespace.HttpGetSubSystemTreeParams) {
   try {
     const res = await http.request({
       method: 'get',
@@ -14,10 +14,10 @@ export async function httpGetSubSystemTree(params: VirtualProjectTree.HttpGetSub
     return res.data
   } catch (error) {
     return []
-  } 
+  }
 }
 
-export async function httpGetHomePageTreeParameter(params: VirtualProjectTree.HttpGetHomePageTreeParameterParams) {
+export async function httpGetHomePageTreeParameter(params: VirtualProjectTreeNamespace.HttpGetHomePageTreeParameterParams) {
   try {
     const res = await http.request({
       method: 'get',

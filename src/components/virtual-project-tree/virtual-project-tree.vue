@@ -102,9 +102,9 @@ defineOptions({
 })
 
 type Props = {
-  businessTree: Array<Partial<VirtualProjectTree.BusinessTreeNode>>
-  treeParams: VirtualProjectTree.BusinessTreeParameter
-  defaultActivedTreeParams: VirtualProjectTree.DefaultActivedBusinessTreeParameter
+  businessTree: Array<Partial<VirtualProjectTreeNamespace.BusinessTreeNode>>
+  treeParams: VirtualProjectTreeNamespace.BusinessTreeParameter
+  defaultActivedTreeParams: VirtualProjectTreeNamespace.DefaultActivedBusinessTreeParameter
   defaultHideStatus: boolean
   businessTreeType: number
   platformId: number
@@ -122,7 +122,7 @@ const props = withDefaults(defineProps<Props>(), {
   businessTreeType: 1, // 默认 工程信息树
   platformId: 1, // 默认 铁建平台
   subSystemMark: '',
-}) 
+})
 
 const {
   businessTree,
@@ -142,7 +142,7 @@ const handleMaskClick = () => {
   filterDropdownStatus.value = false
 }
 
-const handleDropdownOptionClick = (opt: VirtualProjectTree.BusinessTreeParameterOption) => {
+const handleDropdownOptionClick = (opt: VirtualProjectTreeNamespace.BusinessTreeParameterOption) => {
   if (opt.code === activedTreeParams[opt.category!]) return
   activedTreeParams[opt.category!] = opt.code
 }
@@ -244,9 +244,9 @@ const handleSearch = () => {
 }
 
 const treeMap = ref<any[]>([])
-const fullTreeMap = ref<any[]>([]) 
+const fullTreeMap = ref<any[]>([])
 
-const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTree.BusinessTreeNode>>) => {
+const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTreeNamespace.BusinessTreeNode>>) => {
   fullTreeMap.value = treeMap.value = treeFlatten(data)
 }
 
@@ -258,7 +258,7 @@ watch(businessTree, () => {
 
 interface Category {
   category: string
-  options: VirtualProjectTree.BusinessTreeParameterOption[] 
+  options: VirtualProjectTreeNamespace.BusinessTreeParameterOption[]
 }
 
 const categoryList = ref<Category[]>([])
@@ -276,7 +276,7 @@ watch(defaultActivedTreeParams, (params) => {
   immediate: true,
 })
 
-const handleTreeParamsChange = (params: VirtualProjectTree.BusinessTreeParameter) => {
+const handleTreeParamsChange = (params: VirtualProjectTreeNamespace.BusinessTreeParameter) => {
   if (!isObjectType(params)) return
 
   const list: Category[] = []
@@ -296,7 +296,7 @@ const handleTreeParamsChange = (params: VirtualProjectTree.BusinessTreeParameter
         }
       }),
     })
-  }) 
+  })
 
   categoryList.value = list
 }
@@ -308,7 +308,7 @@ watch(treeParams, (params) => {
 })
 
 const emit = defineEmits<{
-  nodeClick: [node: any], 
+  nodeClick: [node: any],
   confirmClick: [params: Record<string, string | boolean>],
 }>()
 
