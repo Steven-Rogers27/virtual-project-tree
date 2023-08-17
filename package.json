@@ -11,11 +11,11 @@
     "email": "sunwei@cr12d.com"
   },
   "main": "./dist/virtual-project-tree.umd.cjs",
-  "module": "./dist/virtual-project-tree.umd.cjs",
+  "module": "./dist/virtual-project-tree.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/virtual-project-tree.umd.cjs",
+      "import": "./dist/virtual-project-tree.js",
       "require": "./dist/virtual-project-tree.umd.cjs"
     }
   },

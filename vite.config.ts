@@ -21,8 +21,8 @@ export default defineConfig({
   build: {
     target: ['chrome80'],
     lib: {
-      entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'), 
-      formats: ['umd'],
+      entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'),
+      formats: ['umd', 'es'],
       name: 'VirutalProjectTree',
     },
     minify: 'terser',

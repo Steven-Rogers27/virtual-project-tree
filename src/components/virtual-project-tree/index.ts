@@ -1,6 +1,7 @@
 import VirtualProjectTreeComponent from './virtual-project-tree.vue'
 import { App } from 'vue'
 import { registerAxios } from './http'
+import './style.css'
 
 export const config = (axios: VirtualProjectTree.Axios) => {
   registerAxios(axios)
