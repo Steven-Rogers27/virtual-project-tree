@@ -26,8 +26,8 @@ export default defineConfig({
 	    formats: ['umd'],
     },
 
-	  cssCodeSplit: true,
-    minify: 'terser',
+	  cssCodeSplit: true, // true css文件和umd格式的js包打在一起； false  css文件会单独抽出来。 在 lib 模式时，'es' 格式的包，css始终是被单独抽出来的。
+    minify: 'terser', // 配合 terserOptions.compress.passes: 10，打出来的包比 'esbuild' 更小
     terserOptions: {
       compress: {
         module: true,
