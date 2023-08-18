@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, toRefs, watch } from 'vue'
+import {ref, onMounted, toRefs, watch, onActivated} from 'vue'
 
 type Props = {
   treeMap: Array<any>
@@ -54,7 +54,7 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {
   treeMap: () => [],
-}) 
+})
 
 const {
   treeMap,
@@ -161,7 +161,7 @@ const calculateVirtualTreeData = () => {
   treeFullHeight.value = calcTreeFullHeight()
   const [ upHiddenCount, calcItemHeight, lastItemHeight ] = calcUpHiddenCount(0, vtreeWrapDom.scrollTop)
   /**
-   * v-tree 每次 translateY() 下移的距离应该是 calcItemHeight - lastItemHeight 
+   * v-tree 每次 translateY() 下移的距离应该是 calcItemHeight - lastItemHeight
    * 其中 calcItemHeight 是刚好超出 scrollTop 的总dom高度
    * lastItemHeight 是包含在scrollTop中的最后一个列表项lastItem的高度，最后这个列表项有可能完全包含在scrollTop中，
    * 也有可能超出scrollTop
@@ -215,6 +215,12 @@ onMounted(() => {
      */
     calculateVirtualTreeData()
   });
+})
+
+onActivated(() => {
+  setTimeout(() => {
+    calculateVirtualTreeData()
+  })
 })
 
 const emit = defineEmits<{
