@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref, toRefs, watch, onActivated, } from 'vue';
+import {reactive, computed, ref, toRefs, watch, onActivated, onDeactivated,} from 'vue';
 import VirtualTree from './virtual-tree.vue'
 import { treeFlatten, isObjectType } from './utils'
 import { http, httpGetHomePageTreeParameter, httpGetSubSystemTree } from './http'
@@ -320,9 +320,12 @@ const handleTreeItemClick = (serialNumber: number) => {
   emit('nodeClick', cp)
 }
 
-const invokeHttpGetSubSystemTree = () => {
+const lockForInvokeHttpGetSubSystemTree = ref(false)
+const invokeHttpGetSubSystemTree = async () => {
   if (http) {
-    httpGetSubSystemTree({
+    if (lockForInvokeHttpGetSubSystemTree.value) return
+    lockForInvokeHttpGetSubSystemTree.value = true
+    await httpGetSubSystemTree({
       platFormId: platformId.value,
       projectDisableFlag: hideStatus.value,
       projectMajorTypeCode: activedTreeParams.majorType,
@@ -332,26 +335,38 @@ const invokeHttpGetSubSystemTree = () => {
       subTreeValue: businessTreeType.value,
     }).then(data => {
       handleBusinessTreeChange(data)
+    }).finally(() => {
+      lockForInvokeHttpGetSubSystemTree.value = false
     })
   }
 }
 
-const invokeHttpGetHomePageTreeParameter = () => {
+const lockForInvokeHttpGetHomePageTreeParameter = ref(false)
+const invokeHttpGetHomePageTreeParameter = async () => {
   if (http) {
+    if (lockForInvokeHttpGetHomePageTreeParameter.value) return
+    lockForInvokeHttpGetHomePageTreeParameter.value = true
     // 传入axios实例则启用组件内部封装的接口调用
-    httpGetHomePageTreeParameter({
+    await httpGetHomePageTreeParameter({
       businessTreeType: businessTreeType.value,
       platformId: platformId.value
-    }).then(data => {
+    }).then(async data => {
       handleTreeParamsChange(data)
-      invokeHttpGetSubSystemTree()
+      await invokeHttpGetSubSystemTree()
+    }).finally(() => {
+      lockForInvokeHttpGetHomePageTreeParameter.value = false
     })
   }
 }
 
 invokeHttpGetHomePageTreeParameter()
+
 onActivated(() => {
   invokeHttpGetHomePageTreeParameter()
+})
+
+onDeactivated(() => {
+  handleSearchClear()
 })
 
 watch([businessTreeType, platformId], () => {

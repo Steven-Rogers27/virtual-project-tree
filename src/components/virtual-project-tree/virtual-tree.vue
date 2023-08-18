@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, toRefs, watch, onActivated} from 'vue'
+import {ref, onMounted, toRefs, watch, onActivated, onDeactivated} from 'vue'
 
 type Props = {
   treeMap: Array<any>
@@ -192,6 +192,7 @@ const calculateVirtualTreeData = () => {
   let ticking = false
 
   vtreeWrapDom.addEventListener('scroll', (evt: Event) => {
+    evt.stopImmediatePropagation()
     if (!ticking) {
       window.requestAnimationFrame(() => {
         scrollHandle(evt)
@@ -203,7 +204,9 @@ const calculateVirtualTreeData = () => {
   })
 }
 
+const flagForOnMounted = ref(false)
 onMounted(() => {
+  flagForOnMounted.value = true
   setTimeout(() => {
     /**
      * 在vue 3.2.31 版本中，直接在 onMounted()回调中执行 calculateVirtualTreeData()方法
@@ -218,9 +221,16 @@ onMounted(() => {
 })
 
 onActivated(() => {
-  setTimeout(() => {
-    calculateVirtualTreeData()
-  })
+  // onMounted 没执行时才执行
+  if (!flagForOnMounted.value) {
+    setTimeout(() => {
+      calculateVirtualTreeData()
+    })
+  }
+})
+
+onDeactivated(() => {
+  flagForOnMounted.value = false
 })
 
 const emit = defineEmits<{
