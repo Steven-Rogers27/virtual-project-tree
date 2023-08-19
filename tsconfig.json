@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
+    // Ensure that .d.ts files are created by tsc, but not .js files
     "declaration": true,
+    "emitDeclarationOnly": true,
     "declarationDir": "./dist/types",
     "declarationMap": true,
     "target": "ES2020",
@@ -13,8 +15,9 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "preserve",
 
     /* Linting */
