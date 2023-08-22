@@ -265,9 +265,15 @@ const handleSearch = () => {
 
 const treeMap = ref<any[]>([])
 const fullTreeMap = ref<any[]>([])
-
+let fullTreeMapResolve: (...args: any[]) => void
+const fullTreeMapPromise = new Promise((resolve) => {
+  fullTreeMapResolve = resolve
+})
 const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTreeNamespace.BusinessTreeNode>>) => {
   fullTreeMap.value = treeMap.value = treeFlatten(data)
+  if (typeof fullTreeMapResolve === 'function') {
+    fullTreeMapResolve()
+  }
 }
 
 watch(businessTree, () => {
@@ -393,7 +399,9 @@ const invokeHttpGetAppRecentIdInfos = createInvokeHttpWithLock(
       platformId: platformId.value,
       businessTreeType: businessTreeType.value,
     }).then(data => {
-      updateSearchRecordList(data || [])
+      fullTreeMapPromise.then(() => {
+        updateSearchRecordList(data || [])
+      })
     })
   ,
   !!http
