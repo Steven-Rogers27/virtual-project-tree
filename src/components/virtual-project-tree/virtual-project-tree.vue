@@ -36,7 +36,14 @@
         @click="handleSearchClear"
       >取消</span>
     </div>
+    <SearchRecords
+      v-if="!isSearchRecordListEmpty"
+      :record-list="searchRecordList"
+      @record-click="emitNodeClick"
+      @clear-records="handleClearRecords"
+    />
     <VirtualTree
+      :style="{ height: virtualTreeHeight }"
       :tree-map="treeMap"
       @node-click="handleTreeItemClick"
     />
@@ -94,8 +101,15 @@
 <script setup lang="ts">
 import {reactive, computed, ref, toRefs, watch, onActivated, onDeactivated,} from 'vue';
 import VirtualTree from './virtual-tree.vue'
-import { treeFlatten, isObjectType } from './utils'
-import { http, httpGetHomePageTreeParameter, httpGetSubSystemTree } from './http'
+import SearchRecords from "./search-records.vue"
+import { treeFlatten, isObjectType, createInvokeHttpWithLock, BusinessNodeType } from './utils'
+import {
+  http,
+  httpGetAppRecentIdInfos,
+  httpGetClearRecentIdInfos,
+  httpGetHomePageTreeParameter,
+  httpGetSubSystemTree, httpPostPutSoleNodeSelected
+} from './http'
 
 defineOptions({
   name: 'VirtualProjectTree',
@@ -109,6 +123,8 @@ type Props = {
   businessTreeType: number
   platformId: number
   subSystemMark: string
+  corporationClickable: boolean // 集团、公司级是否可点
+  treeApiBuiltInEnable: boolean // 默认启用组件内部调用 httpGetHomePageTreeParameter 和 httpGetSubSystemTree 接口
 }
 const props = withDefaults(defineProps<Props>(), {
   businessTree: () => [],
@@ -122,6 +138,8 @@ const props = withDefaults(defineProps<Props>(), {
   businessTreeType: 1, // 默认 工程信息树
   platformId: 1, // 默认 铁建平台
   subSystemMark: '',
+  corporationClickable: true,
+  treeApiBuiltInEnable: true,
 })
 
 const {
@@ -132,6 +150,8 @@ const {
   businessTreeType,
   platformId,
   subSystemMark,
+  corporationClickable,
+  treeApiBuiltInEnable,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -310,23 +330,106 @@ watch(treeParams, (params) => {
 const emit = defineEmits<{
   nodeClick: [node: any],
   confirmClick: [params: Record<string, string | boolean>],
+  clearSearchRecords: [],
 }>()
 
 const handleTreeItemClick = (serialNumber: number) => {
   const item = fullTreeMap.value[serialNumber][1]
+  emitNodeClick(item)
+}
+
+const emitNodeClick = (item: any) => {
+  // 不允许点集团、公司级节点
+  if (!corporationClickable.value) {
+    if (item.type === BusinessNodeType.corporation) return
+  }
   const cp = {...item}
   Reflect.deleteProperty(cp, 'domHeight')
   Reflect.deleteProperty(cp, 'serialNumber')
   emit('nodeClick', cp)
+  invokeHttpPostPutSoleNodeSelected(cp)
 }
 
-const lockForInvokeHttpGetSubSystemTree = ref(false)
-const invokeHttpGetSubSystemTree = async () => {
-  if (http) {
-    if (lockForInvokeHttpGetSubSystemTree.value) return
-    lockForInvokeHttpGetSubSystemTree.value = true
-    await httpGetSubSystemTree({
-      platFormId: platformId.value,
+const handleClearRecords = () => {
+  invokeHttpGetClearRecentIdInfos()
+  emit('clearSearchRecords')
+}
+
+const searchRecordList = ref<any[]>([])
+const isSearchRecordListEmpty = computed(() => !searchRecordList.value.length)
+
+const virtualTreeHeight = ref('0')
+watch(() => searchRecordList.value.length, () => {
+  // 历史记录数目改变时，重新计算虚拟树的容器高度
+  setTimeout(() => {
+    const searchRecordsWrapperDom = document.querySelector('.search-records-wrapper')
+    if (!searchRecordsWrapperDom) {
+      virtualTreeHeight.value = `calc(100% - 104px)`
+      return
+    }
+    const { height } = searchRecordsWrapperDom.getBoundingClientRect()
+    virtualTreeHeight.value = `calc(100% - 104px - ${height}px)`
+  })
+}, {
+  immediate: true
+})
+
+const invokeHttpGetClearRecentIdInfos = createInvokeHttpWithLock(
+  () =>
+     httpGetClearRecentIdInfos({
+      platformId: platformId.value,
+      businessTreeType: businessTreeType.value,
+    }).then(() => {
+      // 清除完后重新调 invokeHttpGetAppRecentIdInfos
+      invokeHttpGetAppRecentIdInfos()
+    })
+  ,
+  !!http
+)
+
+const invokeHttpGetAppRecentIdInfos = createInvokeHttpWithLock(
+  () =>
+    httpGetAppRecentIdInfos({
+      platformId: platformId.value,
+      businessTreeType: businessTreeType.value,
+    }).then(data => {
+      updateSearchRecordList(data || [])
+    })
+  ,
+  !!http
+)
+
+const invokeHttpPostPutSoleNodeSelected = createInvokeHttpWithLock(
+  (node) =>
+    httpPostPutSoleNodeSelected({
+      platformId: platformId.value,
+      businessTreeType: businessTreeType.value,
+    }, {
+      ...node
+    }).then(() => {
+      // 重新查历史记录
+      invokeHttpGetAppRecentIdInfos()
+    })
+  ,
+  !!http
+)
+
+const updateSearchRecordList = (data: any[]) => {
+  const recordList = []
+  for (let i = 0, len = data.length; i < len; i++) {
+    const d = data[i]
+    const idx: number = fullTreeMap.value.findIndex(t => t[0] === d.idInfo)
+    if (~idx) {
+      recordList.push(fullTreeMap.value[idx][1])
+    }
+  }
+  searchRecordList.value = recordList.slice(0, 4) // 最多只展示4个历史记录
+}
+
+const invokeHttpGetSubSystemTree = createInvokeHttpWithLock(
+   () =>
+    httpGetSubSystemTree({
+      platformId: platformId.value,
       projectDisableFlag: hideStatus.value,
       projectMajorTypeCode: activedTreeParams.majorType,
       projectStatusCode: activedTreeParams.projectStatus,
@@ -335,34 +438,31 @@ const invokeHttpGetSubSystemTree = async () => {
       subTreeValue: businessTreeType.value,
     }).then(data => {
       handleBusinessTreeChange(data)
-    }).finally(() => {
-      lockForInvokeHttpGetSubSystemTree.value = false
     })
-  }
-}
+  ,
+  http && treeApiBuiltInEnable.value
+)
 
-const lockForInvokeHttpGetHomePageTreeParameter = ref(false)
-const invokeHttpGetHomePageTreeParameter = async () => {
-  if (http) {
-    if (lockForInvokeHttpGetHomePageTreeParameter.value) return
-    lockForInvokeHttpGetHomePageTreeParameter.value = true
+const invokeHttpGetHomePageTreeParameter = createInvokeHttpWithLock(
+  () =>
     // 传入axios实例则启用组件内部封装的接口调用
-    await httpGetHomePageTreeParameter({
+    httpGetHomePageTreeParameter({
       businessTreeType: businessTreeType.value,
       platformId: platformId.value
     }).then(async data => {
       handleTreeParamsChange(data)
       await invokeHttpGetSubSystemTree()
-    }).finally(() => {
-      lockForInvokeHttpGetHomePageTreeParameter.value = false
     })
-  }
-}
+  ,
+  http && treeApiBuiltInEnable.value
+)
 
 invokeHttpGetHomePageTreeParameter()
+invokeHttpGetAppRecentIdInfos()
 
 onActivated(() => {
   invokeHttpGetHomePageTreeParameter()
+  invokeHttpGetAppRecentIdInfos()
 })
 
 onDeactivated(() => {
@@ -371,6 +471,7 @@ onDeactivated(() => {
 
 watch([businessTreeType, platformId], () => {
   invokeHttpGetHomePageTreeParameter()
+  invokeHttpGetAppRecentIdInfos()
 })
 watch(subSystemMark, () => {
   invokeHttpGetSubSystemTree()

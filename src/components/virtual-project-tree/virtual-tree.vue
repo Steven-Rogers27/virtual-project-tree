@@ -1,6 +1,6 @@
 <template>
   <div
-    class="virtual-tree-wrapper h-100-104 box-content overflow-auto px-16 relative bg-color-white text-16"
+    class="virtual-tree-wrapper box-content overflow-auto px-16 relative bg-color-white text-16"
     @click="handleItemClick"
   >
     <div
@@ -47,6 +47,7 @@
 
 <script setup lang="ts">
 import {ref, onMounted, toRefs, watch, onActivated, onDeactivated} from 'vue'
+import { debounce } from './utils.ts'
 
 type Props = {
   treeMap: Array<any>
@@ -75,17 +76,24 @@ watch(treeMap, () => {
   calculateVirtualTreeData()
 })
 
+const clearTreeMapItemDomHeight = () => {
+  for (let i = 0, len = treeMap.value.length; i < len; i++) {
+    treeMap.value[i][1].domHeight = 0
+  }
+}
+
 const fontSizeRatio = ref(1)
-const calculateVirtualTreeData = () => {
+const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
   const vtreeWrapDom = document.querySelector('.virtual-tree-wrapper')
   if (!vtreeWrapDom) return
-  vtreeWrapDom.scrollTop = 0
+  vtreeWrapDom.scrollTop = initialVTreeWrapDomScrollTop
+  vtreeWrapDom.removeEventListener('scroll', scrollListener)
+  clearTreeMapItemDomHeight()
 
   const wrapperCSS = window.getComputedStyle(vtreeWrapDom)
   const realFontSize: number = +wrapperCSS.getPropertyValue('font-size').replace(/(px)$/, '')
   const designFontSize = 16
   fontSizeRatio.value = +(realFontSize / designFontSize).toFixed(3)
-  const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
 
   const vtwRealHeightDom = document.querySelector('.virtual-tree-wrapper .real-height-div')
   if (!vtwRealHeightDom) return
@@ -172,6 +180,7 @@ const calculateVirtualTreeData = () => {
   vtreeMoveDistance.value = Math.max(calcItemHeight - lastItemHeight, 0)
   start.value = Math.max(upHiddenCount, 0)
 
+  const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
   let viewportCount = calcCount(start.value, vtwHeight)
   renderedTreeData.value = treeMap.value.slice(start.value, start.value + viewportCount).map(t => t[1])
 
@@ -185,13 +194,13 @@ const calculateVirtualTreeData = () => {
     // 更新起始下标start.value
     start.value = upHiddenCount
 
+    const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
     viewportCount = calcCount(start.value, vtwHeight + Math.ceil(vtwHeight * 0.2)) // 高度多算个20%
     renderedTreeData.value = treeMap.value.slice(start.value, start.value + viewportCount).map(t => t[1])
   }
 
   let ticking = false
-
-  vtreeWrapDom.addEventListener('scroll', (evt: Event) => {
+  function scrollListener(evt: Event) {
     evt.stopImmediatePropagation()
     if (!ticking) {
       window.requestAnimationFrame(() => {
@@ -201,7 +210,30 @@ const calculateVirtualTreeData = () => {
 
       ticking = true
     }
+  }
+  vtreeWrapDom.addEventListener('scroll', scrollListener)
+}
+
+let observerForVTreeWrapperDom: ResizeObserver
+const observeVTreeWrapperDom = () => {
+  const vtreeWrapDom = document.querySelector('.virtual-tree-wrapper')
+  if (!vtreeWrapDom) return
+
+  const debouncedCalculateVirtualTreeData = debounce(calculateVirtualTreeData as any, 500)
+  let skipExecuteOnConstruct = true
+  observerForVTreeWrapperDom = new ResizeObserver(() => {
+    if (skipExecuteOnConstruct) {
+      skipExecuteOnConstruct = false
+      return
+    }
+    debouncedCalculateVirtualTreeData(vtreeWrapDom.scrollTop)
   })
+
+  observerForVTreeWrapperDom.observe(vtreeWrapDom, { box: 'content-box', })
+}
+const unobserveVTreeWrapperDom = () => {
+  if (!observerForVTreeWrapperDom) return
+  observerForVTreeWrapperDom.disconnect()
 }
 
 const flagForOnMounted = ref(false)
@@ -217,6 +249,7 @@ onMounted(() => {
      * 该问题在vue 3.3.4 版本中不存在
      */
     calculateVirtualTreeData()
+    observeVTreeWrapperDom()
   });
 })
 
@@ -225,12 +258,14 @@ onActivated(() => {
   if (!flagForOnMounted.value) {
     setTimeout(() => {
       calculateVirtualTreeData()
+      observeVTreeWrapperDom()
     })
   }
 })
 
 onDeactivated(() => {
   flagForOnMounted.value = false
+  unobserveVTreeWrapperDom()
 })
 
 const emit = defineEmits<{

@@ -40,7 +40,7 @@ declare namespace VirtualProjectTreeNamespace {
   }
 
   export interface HttpGetSubSystemTreeParams {
-    platFormId: number;
+    platformId: number;
     projectDisableFlag: boolean;
     projectMajorTypeCode: string;
     projectStatusCode: string;

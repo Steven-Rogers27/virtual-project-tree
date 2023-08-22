@@ -64,3 +64,18 @@ export function isObjectType(o: any) {
   const regexp = /\[object Object\]/
   return regexp.test(o)
 }
+
+export function createInvokeHttpWithLock(fun: (...args: any[]) => Promise<any>, condition?: boolean) {
+	let lock = false
+	return async (...args: any[]) => {
+		if (!condition) return
+
+		if (lock) return
+		lock = true
+		await fun(...args).finally(() => lock = false)
+	}
+}
+
+export enum BusinessNodeType {
+	corporation = '1', // 集团、公司
+}
