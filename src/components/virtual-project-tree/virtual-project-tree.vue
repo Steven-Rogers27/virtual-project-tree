@@ -271,7 +271,7 @@ const fullTreeMapPromise = new Promise((resolve) => {
 })
 const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTreeNamespace.BusinessTreeNode>>) => {
   fullTreeMap.value = treeMap.value = treeFlatten(data)
-  if (typeof fullTreeMapResolve === 'function') {
+  if (typeof fullTreeMapResolve === 'function' && fullTreeMap.value.length) {
     fullTreeMapResolve()
   }
 }
@@ -424,6 +424,7 @@ const invokeHttpPostPutSoleNodeSelected = createInvokeHttpWithLock(
 
 const updateSearchRecordList = (data: any[]) => {
   const recordList = []
+  console.log(data, fullTreeMap.value)
   for (let i = 0, len = data.length; i < len; i++) {
     const d = data[i]
     const idx: number = fullTreeMap.value.findIndex(t => t[0] === d.idInfo)
