@@ -22,7 +22,7 @@ export default defineConfig({
     target: ['chrome80'],
     lib: {
       entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'),
-      name: 'VirutalProjectTree',
+      name: 'VirtualProjectTree',
 	    formats: ['umd'],
     },
 
