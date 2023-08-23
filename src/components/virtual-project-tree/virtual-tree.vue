@@ -15,13 +15,14 @@
           :data-serial-number="item.serialNumber"
         >
           <div
-            :class="[{ 'px-7': item.domHeight > 44 * fontSizeRatio }, 'min-h-24 leading-24 inline-block pr-34 text-left']"
+            :class="[{ 'px-7': item.domHeight > 44 * fontSizeRatio }, [ item.keyProjectFlag ? 'pr-78' : 'pr-34' ], 'relative min-h-24 leading-24 inline-block text-left']"
             :style="{ paddingLeft: `${ item.level * 16 * fontSizeRatio }px`}"
           >
             <span
               :class="[[item.level < 3 ? 'font-color-3' : 'font-color-2'], 'text-16 font-normal font-family']"
               v-html="item.name"
             ></span>
+            <div v-if="item.keyProjectFlag" class="absolute zhongdian-icon"></div>
           </div>
           <div class="w-18 absolute right-0">
             <div class="project-line-arrow"></div>
@@ -101,9 +102,10 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
   let { width: vtwWidth } = vtwRealHeightDom.getBoundingClientRect()
 
   vtwWidth -= 6 // 估算移动端纵向滚动条宽度6px
-  const calcDomHeight = (name: string, level: number) => {
+  const calcDomHeight = (name: string, level: number, keyProjectFlag: boolean) => {
     const nameLen = name.length * designFontSize * fontSizeRatio.value
-    const boxLen = vtwWidth - level * designFontSize * fontSizeRatio.value - 34 * fontSizeRatio.value // 34 是每行右边的箭头图标 width: 18px 再加上和文字内容间距 16px，共34px
+    // 34 是每行右边的箭头图标 width: 18px 再加上和文字内容间距 16px，共34px。若名称后面还要带上"重点"图标，图标宽28px，左间距16px，共44px
+    const boxLen = vtwWidth - level * designFontSize * fontSizeRatio.value - ( keyProjectFlag ? (34 + 44) : 34) * fontSizeRatio.value
     if (nameLen <= boxLen) {
       // 一行能放下
       return +(44 * fontSizeRatio.value).toFixed(2)
@@ -127,7 +129,7 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
       }
       const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
-        item.domHeight = calcDomHeight(item.name, item.level)
+        item.domHeight = calcDomHeight(item.name, item.level, item.keyProjectFlag)
       }
       calcItemHeight += item.domHeight
       count++
@@ -145,7 +147,7 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
       }
       const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
-        item.domHeight = calcDomHeight(item.name, item.level)
+        item.domHeight = calcDomHeight(item.name, item.level, item.keyProjectFlag)
       }
       calcItemHeight += item.domHeight
       count++
@@ -159,7 +161,7 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
     for (let i = 0, len = treeMap.value.length; i < len; i++) {
       const item = treeMap.value[i][1]
       if (item.domHeight === 0) {
-        item.domHeight = calcDomHeight(item.name, item.level)
+        item.domHeight = calcDomHeight(item.name, item.level, item.keyProjectFlag)
       }
       calcItemHeight += item.domHeight
     }

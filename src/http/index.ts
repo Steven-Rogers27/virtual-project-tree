@@ -4,7 +4,7 @@ const http = axios.create({
   baseURL: '/api',
   withCredentials: true,
   headers: {
-    Authorization: 'Bearer hr|364035_10b3ec47-afe1-4b4d-8942-afbc3441e67a',
+    Authorization: 'Bearer hr|364035_47890460-31ce-462d-b5be-123304d58b55',
   },
 })
 
