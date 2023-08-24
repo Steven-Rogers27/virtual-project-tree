@@ -12,7 +12,8 @@ const handleConfirmClick = (params: unknown) => {
     :tree-params="categoryListMock"
     :sub-system-mark="'crcc12-gongchengsl'"
     @confirm-click="handleConfirmClick"
-  />
+  >
+  </VirtualProjectTree>
 </template>
 
 <style>

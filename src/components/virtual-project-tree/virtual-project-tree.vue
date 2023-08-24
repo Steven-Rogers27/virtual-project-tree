@@ -1,7 +1,9 @@
 <template>
   <div class="h-full w-full box-border relative">
     <div class="whitespace-nowrap box-border h-52 border-1 color-1 w-full border-solid px-16 leading-52 relative z-10 bg-color-white text-left">
-      <span class="font-color font-family text-16 font-medium">请选择单位/项目</span>
+      <slot name="left-title">
+        <span class="font-color font-family text-16 font-medium">请选择单位/项目</span>
+      </slot>
       <div
         class="leading-52 h-52 w-40 float-right relative cursor-pointer"
         @click="handleFilterClick"
@@ -203,6 +205,8 @@ const vanSearchThemeVars = reactive({
   cellLineHeight: '28px',
   fieldClearIconSize: '16px',
   fieldRightIconColor: 'rgba(200, 201, 204, 1)',
+  searchContentBackground: 'rgba(247, 248, 250, 1)',
+  fieldInputTextColor: 'rgba(50, 50, 50, 1)',
 })
 const searchValueNonEmpty = computed(() => {
   return !!(searchValue.value || '').trim().length
