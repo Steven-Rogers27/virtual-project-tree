@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { businessTreeMock, categoryListMock } from './mock/mock';
 
-const handleConfirmClick = (params: unknown) => {
+const handleNodeClick = (params: unknown) => {
   console.log(params)
 }
 </script>
@@ -11,7 +11,7 @@ const handleConfirmClick = (params: unknown) => {
     :business-tree="businessTreeMock"
     :tree-params="categoryListMock"
     :sub-system-mark="'crcc12-gongchengsl'"
-    @confirm-click="handleConfirmClick"
+    @node-click="handleNodeClick"
   >
   </VirtualProjectTree>
 </template>
