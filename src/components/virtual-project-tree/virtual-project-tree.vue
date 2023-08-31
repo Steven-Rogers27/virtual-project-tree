@@ -165,7 +165,11 @@ const handleMaskClick = () => {
 }
 
 const handleDropdownOptionClick = (opt: VirtualProjectTreeNamespace.BusinessTreeParameterOption) => {
-  if (opt.code === activedTreeParams[opt.category!]) return
+  if (opt.code === activedTreeParams[opt.category!]) {
+    // 如果点击已选中的选项则取消选中
+    activedTreeParams[opt.category!] = ''
+    return
+  }
   activedTreeParams[opt.category!] = opt.code
 }
 
