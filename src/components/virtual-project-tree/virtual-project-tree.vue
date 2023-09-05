@@ -362,6 +362,11 @@ const emitNodeClick = (item: any) => {
   Reflect.deleteProperty(cp, 'serialNumber')
   emit('nodeClick', cp)
   invokeHttpPostPutSoleNodeSelected(cp)
+  // 2023-09-05 把选中的节点保存在cookie中供shengchan-mobile门户页获取
+  document.cookie = `nodeSelected=${window.encodeURIComponent(JSON.stringify({
+    idInfo: cp.idInfo,
+    name: cp.name,
+  }))}`
 }
 
 const handleClearRecords = () => {
