@@ -11,6 +11,7 @@ declare module 'vue' {
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
     VanSearch: typeof import('vant/es')['Search']
     VirtualProjectTree: typeof import('./src/components/virtual-project-tree/virtual-project-tree.vue')['default']
+    VirtualProjectTreeSelect: typeof import('./src/components/virtual-project-tree/virtual-project-tree-select.vue')['default']
     VirtualTree: typeof import('./src/components/virtual-project-tree/virtual-tree.vue')['default']
   }
 }
