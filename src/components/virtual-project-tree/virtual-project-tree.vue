@@ -366,7 +366,7 @@ const emitNodeClick = (item: any) => {
   document.cookie = `nodeSelected=${window.encodeURIComponent(JSON.stringify({
     idInfo: cp.idInfo,
     name: cp.name,
-  }))}`
+  }))};path=/;`
 }
 
 const handleClearRecords = () => {

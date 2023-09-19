@@ -1,12 +1,12 @@
 <template>
   <div
-    class="virtual-project-tree-select flex items-center text-16 leading-44"
+    class="virtual-project-tree-select flex items-center text-16 leading-44 font-medium"
     @click="handleTreeSelect"
   >
     <div class="tree-node-value whitespace-nowrap text-ellipsis overflow-hidden">
       {{nodeName ? nodeName : "请选择节点"}}
     </div>
-    <div class="ml-26 mr-8 font-color-2 font-medium">
+    <div class="ml-26 mr-8 text-14 font-color-2">
       切换
     </div>
     <div class="exchange-img"></div>
@@ -56,7 +56,7 @@ const handleTreeSelect = () => {
   padding: 0 16px;
   background: rgba(255, 255, 255, 1);
   .tree-node-value {
-    width: calc(100% - 82px);
+    width: calc(100% - 78px);
     color: #000;
   }
 }
