@@ -103,6 +103,8 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
 
   vtwWidth -= 6 // 估算移动端纵向滚动条宽度6px
   const calcDomHeight = (name: string, level: number, keyProjectFlag: boolean) => {
+    // 当搜索一次之后，name中含有<span style="xx"></span> 这样的标签，在计算内容宽度前要移除掉
+    name = name.replace(/<.*>/g, '')
     const nameLen = name.length * designFontSize * fontSizeRatio.value
     // 34 是每行右边的箭头图标 width: 18px 再加上和文字内容间距 16px，共34px。若名称后面还要带上"重点"图标，图标宽28px，左间距16px，共44px
     const boxLen = vtwWidth - level * designFontSize * fontSizeRatio.value - ( keyProjectFlag ? (34 + 44) : 34) * fontSizeRatio.value
@@ -190,13 +192,15 @@ const calculateVirtualTreeData = (initialVTreeWrapDomScrollTop: number = 0) => {
     const target = evt.target as HTMLDivElement
     if (target.scrollTop === scrollTop.value) return
 
-    scrollTop.value = target.scrollTop
+    const { height: vtwHeight } = vtreeWrapDom?.getBoundingClientRect() 
+    scrollTop.value = target.scrollTop < 0 ?
+                        0 :
+                        Math.min(target.scrollTop, treeFullHeight.value - vtwHeight)
     const [ upHiddenCount, calcItemHeight, lastItemHeight ] = calcUpHiddenCount(0, scrollTop.value)
     vtreeMoveDistance.value = Math.max(calcItemHeight - lastItemHeight, 0)
     // 更新起始下标start.value
     start.value = upHiddenCount
 
-    const { height: vtwHeight, } = vtreeWrapDom.getBoundingClientRect()
     viewportCount = calcCount(start.value, vtwHeight + Math.ceil(vtwHeight * 0.2)) // 高度多算个20%
     renderedTreeData.value = treeMap.value.slice(start.value, start.value + viewportCount).map(t => t[1])
   }
