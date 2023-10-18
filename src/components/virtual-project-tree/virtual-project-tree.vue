@@ -5,14 +5,20 @@
         <span class="font-color font-family text-16 font-medium">请选择单位/项目</span>
       </slot>
       <div
-        class="leading-52 h-52 w-40 float-right relative cursor-pointer"
+        class="leading-52 h-52 float-right relative cursor-pointer flex justify-end items-center"
         @click="handleFilterClick"
       >
         <span
           :class="['text-14 font-family font-normal', [ filterDropdownStatus ? 'font-color-active' : 'font-color' ]]"
         >筛选</span>
         <div
-          :class="['box-border h-8 w-8 border-b-color-white border-x-color-white border-t-4 border-x-4 border-solid absolute right-0 translate-y-n50p top-50p-plus2', [ filterDropdownStatus ? 'border-t-color-active rotate-180 top-50p-n2 transition-transform-border-t-color' : 'transition-transform-border-t-color border-t-color' ]]"></div>
+          class="filter-count-div"
+          v-if="!!filterCount && !filterDropdownStatus"
+        >
+          <span>+{{ filterCount }}</span>
+        </div>
+        <div
+          :class="['box-border h-8 w-8 border-b-color-white border-x-color-white border-t-4 border-x-4 border-solid relative ml-4', [ filterDropdownStatus ? 'border-t-color-active rotate-180 top-1 transition-transform-border-t-color' : 'transition-transform-border-t-color border-t-color top-3' ]]"></div>
       </div>
     </div>
     <div class="box-border h-52 px-16 py-8 leading-36 bg-color-white text-left relative">
@@ -308,6 +314,16 @@ watch(defaultActivedTreeParams, (params) => {
   activedTreeParams.projectType = params.projectType
 }, {
   immediate: true,
+})
+
+const filterCount = computed(() => {
+  let count = 0
+  if (activedTreeParams.projectStatus !== '') count++
+  if (activedTreeParams.majorType !== '') count++
+  if (activedTreeParams.projectType !== '') count++
+  if (hideStatus.value !== false) count++
+
+  return count
 })
 
 const handleTreeParamsChange = (params: VirtualProjectTreeNamespace.BusinessTreeParameter) => {

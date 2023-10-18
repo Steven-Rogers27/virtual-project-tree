@@ -329,6 +329,15 @@
 .top-0 {
   top: 0;
 }
+.top-1 {
+  top: 1px;
+}
+.top-2 {
+  top: 2px;
+}
+.top-3 {
+  top: 3px;
+}
 .top-1-5 {
   top: 1.5px;
 }
@@ -504,6 +513,9 @@
 .ml-8 {
   margin-left: 8px;
 }
+.ml-4 {
+  margin-left: 4px;
+}
 
 .cursor-pointer {
   cursor: pointer;
@@ -548,6 +560,9 @@
 }
 .justify-center {
   justify-content: center;
+}
+.justify-end {
+  justify-content: flex-end;
 }
 
 .shadow-switch-btn {
@@ -615,4 +630,29 @@
 	background-size: contain;
 	width: 28px;
 	height: 18px;
+}
+
+.filter-count-div {
+  width: 34px;
+  height: 24px;
+  line-height: 24px;
+  opacity: 1;
+  border-radius: 20px;
+  background: rgba(247, 248, 250, 1);
+  box-sizing: border-box;
+
+  border: 0.5px solid rgba(235, 237, 240, 1);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  margin-left: 4px;
+}
+
+.filter-count-div span {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(100, 101, 102, 1);
+  font-family: "Microsoft YaHei";
 }
