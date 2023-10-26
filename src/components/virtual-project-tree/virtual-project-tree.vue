@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full box-border relative">
+  <div class="h-full w-full box-border relative overflow-hidden">
     <div class="whitespace-nowrap box-border h-52 border-1 color-1 w-full border-solid px-16 leading-52 relative z-10 bg-color-white text-left">
       <slot name="left-title">
         <span class="font-color font-family text-16 font-medium">请选择单位/项目</span>
