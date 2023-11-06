@@ -288,6 +288,12 @@ const handleBusinessTreeChange = (data: Array<Partial<VirtualProjectTreeNamespac
   if (typeof fullTreeMapResolve === 'function' && fullTreeMap.value.length) {
     fullTreeMapResolve()
   }
+  /**
+   * 树数据发生变化后，如果此时还有搜索条件，则再用搜索条件过滤一下
+   */
+  if (searchValue.value?.trim().length) {
+    handleSearch()
+  }
 }
 
 watch(businessTree, () => {
