@@ -37,6 +37,7 @@
           @search="handleSearch"
           @click-left-icon="handleSearch"
           @click-right-icon="handleSearchClear"
+          @update:model-value="handleUpdateModelValue"
         />
       </van-config-provider>
       <span
@@ -118,6 +119,7 @@ import {
   httpGetHomePageTreeParameter,
   httpGetSubSystemTree, httpPostPutSoleNodeSelected
 } from './http'
+import throttle from 'lodash/throttle'
 
 defineOptions({
   name: 'VirtualProjectTree',
@@ -134,11 +136,13 @@ type Props = {
   corporationClickable: boolean // 集团、公司级是否可点
   treeApiBuiltInEnable: boolean // 默认启用组件内部调用 httpGetHomePageTreeParameter 和 httpGetSubSystemTree 接口
 }
+
+const DEFAULT_PROJECT_STATUS = '0200' // 默认状态"在建"
 const props = withDefaults(defineProps<Props>(), {
   businessTree: () => [],
   treeParams: () => ({}),
   defaultActivedTreeParams: () => ({
-    projectStatus: '0200', // 默认选中 在建
+    projectStatus: DEFAULT_PROJECT_STATUS, // 默认选中 在建
     majorType: '',
     projectType: '',
   }),
@@ -201,7 +205,7 @@ const handleDropdownConfirm = () => {
 
 const handleDropdownReset = () => {
   activedTreeParams.majorType = ''
-  activedTreeParams.projectStatus = ''
+  activedTreeParams.projectStatus = DEFAULT_PROJECT_STATUS
   activedTreeParams.projectType = ''
   hideStatus.value = false
 }
@@ -221,6 +225,13 @@ const vanSearchThemeVars = reactive({
 const searchValueNonEmpty = computed(() => {
   return !!(searchValue.value || '').trim().length
 })
+
+const handleUpdateModelValue = throttle(() => {
+  handleSearch()
+}, 800, {
+  leading: false,
+  trailing: true,
+}) 
 
 const handleSearchClear = () => {
   searchValue.value = ''
