@@ -10,15 +10,17 @@
     "name": "sunw",
     "email": "sunwei@cr12d.com"
   },
-  "main": "./dist/virtual-project-tree.umd.cjs",
-  "module": "./dist/virtual-project-tree.umd.cjs",
+  "types": "./index.d.ts",
+  "exports": {
+    "default": "./dist/virtual-project-tree.umd.cjs"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "http://192.168.100.90:4873"
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
