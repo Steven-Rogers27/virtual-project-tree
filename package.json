@@ -16,7 +16,8 @@
   "types": "./index.d.ts",
   "exports": {
     ".": "./dist/virtual-project-tree.umd.cjs",
-    "./esm": "./dist/esm/virtual-project-tree.js"
+    "./esm": "./dist/esm/virtual-project-tree.js",
+    "./esm/index.css": "./dist/esm/index.css"
   },
   "publishConfig": {
     "access": "public",
