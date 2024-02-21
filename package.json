@@ -5,6 +5,7 @@
   "type": "module",
   "files": [
     "./dist/virtual-project-tree.umd.cjs",
+    "./dist/esm/virtual-project-tree.js",
     "./index.d.ts"
   ],
   "author": {
@@ -13,7 +14,8 @@
   },
   "types": "./index.d.ts",
   "exports": {
-    "default": "./dist/virtual-project-tree.umd.cjs"
+    ".": "./dist/virtual-project-tree.umd.cjs",
+    "./esm": "./dist/esm/virtual-project-tree.js"
   },
   "publishConfig": {
     "access": "public",

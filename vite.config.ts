@@ -23,7 +23,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/components/virtual-project-tree/index.ts'),
       name: 'CoolVirtualProjectTree',
-	    formats: ['umd'],
+	    formats: ['umd', 'es'],
     },
 
 	  cssCodeSplit: true, // true css文件和umd格式的js包打在一起； false  css文件会单独抽出来。 在 lib 模式时，'es' 格式的包，css始终是被单独抽出来的。
