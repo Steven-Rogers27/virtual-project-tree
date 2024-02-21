@@ -6,6 +6,7 @@
   "files": [
     "./dist/virtual-project-tree.umd.cjs",
     "./dist/esm/virtual-project-tree.js",
+    "./dist/esm/index.css",
     "./index.d.ts"
   ],
   "author": {
