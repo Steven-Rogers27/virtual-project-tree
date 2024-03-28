@@ -52,6 +52,7 @@ declare namespace VirtualProjectTreeNamespace {
   export interface HttpGetHomePageTreeParameterParams {
     businessTreeType: number;
     platformId: number;
+    consoleId?: string;
   }
 }
 

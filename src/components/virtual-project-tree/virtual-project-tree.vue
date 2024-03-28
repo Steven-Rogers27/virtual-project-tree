@@ -135,6 +135,7 @@ type Props = {
   subSystemMark: string
   corporationClickable: boolean // 集团、公司级是否可点
   treeApiBuiltInEnable: boolean // 默认启用组件内部调用 httpGetHomePageTreeParameter 和 httpGetSubSystemTree 接口
+  consoleId?: string
 }
 
 const DEFAULT_PROJECT_STATUS = '0200' // 默认状态"在建"
@@ -164,6 +165,7 @@ const {
   subSystemMark,
   corporationClickable,
   treeApiBuiltInEnable,
+  consoleId,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -431,6 +433,7 @@ const invokeHttpGetClearRecentIdInfos = createInvokeHttpWithLock(
      httpGetClearRecentIdInfos({
       platformId: platformId.value,
       businessTreeType: businessTreeType.value,
+      consoleId: consoleId.value,
     }).then(() => {
       // 清除完后重新调 invokeHttpGetAppRecentIdInfos
       invokeHttpGetAppRecentIdInfos()
@@ -444,6 +447,7 @@ const invokeHttpGetAppRecentIdInfos = createInvokeHttpWithLock(
     httpGetAppRecentIdInfos({
       platformId: platformId.value,
       businessTreeType: businessTreeType.value,
+      consoleId: consoleId.value,
     }).then(data => {
       fullTreeMapPromise.then(() => {
         updateSearchRecordList(data || [])
@@ -458,6 +462,7 @@ const invokeHttpPostPutSoleNodeSelected = createInvokeHttpWithLock(
     httpPostPutSoleNodeSelected({
       platformId: platformId.value,
       businessTreeType: businessTreeType.value,
+      consoleId: consoleId.value,
     }, {
       ...node
     }).then(() => {
