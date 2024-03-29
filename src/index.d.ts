@@ -47,6 +47,7 @@ declare namespace VirtualProjectTreeNamespace {
     projectTypeCode: string;
     subSystemMark: string;
     subTreeValue: number;
+    consoleId?: string;
   }
 
   export interface HttpGetHomePageTreeParameterParams {

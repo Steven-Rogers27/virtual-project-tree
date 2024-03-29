@@ -495,6 +495,7 @@ const invokeHttpGetSubSystemTree = createInvokeHttpWithLock(
       projectTypeCode: activedTreeParams.projectType,
       subSystemMark: subSystemMark.value,
       subTreeValue: businessTreeType.value,
+      consoleId: consoleId.value,
     }).then(data => {
       handleBusinessTreeChange(data)
     })
@@ -534,6 +535,10 @@ watch([businessTreeType, platformId], () => {
 })
 watch(subSystemMark, () => {
   invokeHttpGetSubSystemTree()
+})
+watch(consoleId, () => {
+  invokeHttpGetSubSystemTree()
+  invokeHttpGetAppRecentIdInfos()
 })
 </script>
 
