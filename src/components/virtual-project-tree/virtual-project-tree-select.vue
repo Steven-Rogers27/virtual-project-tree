@@ -6,7 +6,7 @@
     <div class="tree-node-value whitespace-nowrap text-ellipsis overflow-hidden">
       {{nodeName ? nodeName : "请选择节点"}}
     </div>
-    <div class="ml-26 mr-8 text-14 font-color-2">
+    <div class="ml-26 mr-8 text-14 font-color-2 whitespace-nowrap">
       切换
     </div>
     <div class="exchange-img"></div>

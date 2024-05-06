@@ -5,6 +5,7 @@
         <span class="font-color font-family text-16 font-medium">请选择单位/项目</span>
       </slot>
       <div
+        v-if="!disableFilter"
         class="leading-52 h-52 float-right relative cursor-pointer flex justify-end items-center"
         @click="handleFilterClick"
       >
@@ -136,6 +137,7 @@ type Props = {
   corporationClickable: boolean // 集团、公司级是否可点
   treeApiBuiltInEnable: boolean // 默认启用组件内部调用 httpGetHomePageTreeParameter 和 httpGetSubSystemTree 接口
   consoleId?: string
+  disableFilter?: boolean // 不需要“筛选”条件时可以去掉
 }
 
 const DEFAULT_PROJECT_STATUS = '0200' // 默认状态"在建"
@@ -153,6 +155,7 @@ const props = withDefaults(defineProps<Props>(), {
   subSystemMark: '',
   corporationClickable: true,
   treeApiBuiltInEnable: true,
+  disableFilter: false,
 })
 
 const {
@@ -166,6 +169,7 @@ const {
   corporationClickable,
   treeApiBuiltInEnable,
   consoleId,
+  disableFilter,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -514,7 +518,7 @@ const invokeHttpGetHomePageTreeParameter = createInvokeHttpWithLock(
       await invokeHttpGetSubSystemTree()
     })
   ,
-  http && treeApiBuiltInEnable.value
+  http && treeApiBuiltInEnable.value && !disableFilter.value
 )
 
 invokeHttpGetHomePageTreeParameter()
