@@ -138,6 +138,7 @@ type Props = {
   treeApiBuiltInEnable: boolean // 默认启用组件内部调用 httpGetHomePageTreeParameter 和 httpGetSubSystemTree 接口
   consoleId?: string
   disableFilter?: boolean // 不需要“筛选”条件时可以去掉
+  preventTreeNodeClick?: (node: Partial<VirtualProjectTreeNamespace.BusinessTreeNode>) => boolean // 2024-7-29新增 阻止某些节点被点击
 }
 
 const DEFAULT_PROJECT_STATUS = '0200' // 默认状态"在建"
@@ -170,6 +171,7 @@ const {
   treeApiBuiltInEnable,
   consoleId,
   disableFilter,
+  preventTreeNodeClick,
 } = toRefs(props)
 
 const filterDropdownStatus = ref(false)
@@ -392,6 +394,12 @@ const handleTreeItemClick = (serialNumber: number) => {
 }
 
 const emitNodeClick = (item: any) => {
+  // 自定义 阻止某些节点被选中
+  if (
+    typeof preventTreeNodeClick.value === 'function' &&
+    preventTreeNodeClick.value(item)
+  ) return
+
   // 不允许点集团、公司级节点
   if (!corporationClickable.value) {
     if (item.type === BusinessNodeType.corporation) return
