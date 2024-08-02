@@ -55,6 +55,7 @@
     <VirtualTree
       :style="{ height: virtualTreeHeight }"
       :tree-map="treeMap"
+      :prevent-tree-node-click="preventTreeNodeClick"
       @node-click="handleTreeItemClick"
     />
     <div

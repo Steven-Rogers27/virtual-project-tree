@@ -11,7 +11,7 @@
         <div
           v-for="item in renderedTreeData"
           :key="item.idInfo"
-          class="border-t-0 border-l-0 border-r-0 border-b-1 border-solid border-b-color-grep-2 box-border min-h-44 leading-44 relative cursor-pointer flex items-center justify-between"
+          :class="[treeNodeCanClick(item) ? 'cursor-pointer' : 'cursor-not-allowed', 'border-t-0 border-l-0 border-r-0 border-b-1 border-solid border-b-color-grep-2 box-border min-h-44 leading-44 relative flex items-center justify-between']"
           :data-serial-number="item.serialNumber"
         >
           <div
@@ -24,7 +24,9 @@
             ></span>
             <div v-if="item.keyProjectFlag" class="absolute zhongdian-icon"></div>
           </div>
-          <div class="w-18 absolute right-0">
+          <div
+            v-if="treeNodeCanClick(item)"
+            class="w-18 absolute right-0">
             <div class="project-line-arrow"></div>
           </div>
         </div>
@@ -52,6 +54,7 @@ import { debounce } from './utils.ts'
 
 type Props = {
   treeMap: Array<any>
+  preventTreeNodeClick?: (node: Partial<VirtualProjectTreeNamespace.BusinessTreeNode>) => boolean // 2024-7-29新增 阻止某些节点被点击
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -60,6 +63,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const {
   treeMap,
+  preventTreeNodeClick,
 } = toRefs(props)
 
 const scrollTop = ref(0)
@@ -68,6 +72,10 @@ const treeFullHeight = ref(0)
 const vtreeMoveDistance = ref(0)
 
 const start = ref(0)
+
+const treeNodeCanClick = (node: any) => {
+  return typeof preventTreeNodeClick.value !== 'function' || !preventTreeNodeClick.value(node)
+}
 
 watch(treeMap, () => {
   scrollTop.value = 0
@@ -280,6 +288,7 @@ const emit = defineEmits<{
 }>()
 
 const handleItemClick = (evt: MouseEvent) => {
+
   let target: HTMLElement | null = evt.target as HTMLElement
   while (target && target.dataset.serialNumber === void 0) {
     target = target.parentElement
